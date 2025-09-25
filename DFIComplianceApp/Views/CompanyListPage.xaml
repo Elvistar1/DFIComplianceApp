@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:conv="clr-namespace:DFIComplianceApp.Converters"
+    x:Class="DFIComplianceApp.Views.CompanyListPage"
+    xmlns:models="clr-namespace:DFIComplianceApp.Models"
+    x:Name="page"
+    Title="Registered Companies"
+    BackgroundColor="#fafafa">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <x:Array x:Key="NatureOfWorkList" Type="{x:Type x:String}">
+                <x:String>Oil &amp; Gas Stations</x:String>
+                <x:String>Food Processing Companies</x:String>
+                <x:String>Wood Processing Companies</x:String>
+                <x:String>Warehouses</x:String>
+                <x:String>Sachet Water Production Plants</x:String>
+                <x:String>Offices</x:String>
+                <x:String>Shops</x:String>
+                <x:String>Manufacturing Companies</x:String>
+            </x:Array>
+
+            <conv:InverseBoolConverter x:Key="InverseBoolConverter"/>
+            <conv:NullToBoolConverter x:Key="NullToBoolConverter"/>
+
+            <Style x:Key="Card" TargetType="Frame">
+                <Setter Property="CornerRadius" Value="14"/>
+                <Setter Property="Padding" Value="16"/>
+                <Setter Property="Margin" Value="6,8"/>
+                <Setter Property="HasShadow" Value="True"/>
+                <Setter Property="BorderColor" Value="#ddd"/>
+                <Setter Property="BackgroundColor" Value="White"/>
+                <Setter Property="Shadow">
+                    <Setter.Value>
+                        <Shadow Brush="#33000000" Radius="6" Opacity="0.15" Offset="2,4"/>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="FieldLabel" TargetType="Label">
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="TextColor" Value="#546E7A"/>
+                <Setter Property="FontAttributes" Value="Bold"/>
+            </Style>
+
+            <Style x:Key="SectionHeader" TargetType="Label">
+                <Setter Property="FontSize" Value="16"/>
+                <Setter Property="TextColor" Value="#37474F"/>
+                <Setter Property="FontAttributes" Value="Bold"/>
+                <Setter Property="Margin" Value="0,12,0,4"/>
+            </Style>
+
+            <Style x:Key="IconButton" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="Transparent"/>
+                <Setter Property="FontSize" Value="18"/>
+                <Setter Property="TextColor" Value="#2196F3"/>
+                <Setter Property="WidthRequest" Value="36"/>
+                <Setter Property="HeightRequest" Value="36"/>
+                <Setter Property="Padding" Value="0"/>
+                <Setter Property="CornerRadius" Value="18"/>
+            </Style>
+
+            <!-- Frame style for Entry wrappers -->
+            <Style x:Key="EntryFrameStyle" TargetType="Frame">
+                <Setter Property="Padding" Value="8"/>
+                <Setter Property="CornerRadius" Value="6"/>
+                <Setter Property="BackgroundColor" Value="#f5f5f5"/>
+                <Setter Property="HasShadow" Value="False"/>
+                <Setter Property="BorderColor" Value="#ddd"/>
+                <Setter Property="Margin" Value="0,0,0,4"/>
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <RefreshView x:Name="RefreshView" Refreshing="OnRefresh">
+        <ScrollView>
+            <VerticalStackLayout Padding="20" Spacing="18">
+
+                <Label Text="🏭 All Registered Companies"
+                       FontSize="26"
+                       FontAttributes="Bold"
+                       TextColor="#37474F"/>
+
+                <SearchBar x:Name="CompanySearchBar"
+                           Placeholder="Search by company name…"
+                           TextChanged="OnSearchTextChanged"
+                           CancelButtonColor="Gray"
+                           Margin="0,0,0,8"/>
+
+                <HorizontalStackLayout Spacing="12" Margin="0,0,0,8">
+                    <Picker x:Name="YearFilterPicker"
+                            Title="Filter by Year"
+                            SelectedIndexChanged="OnFilterChanged"
+                            WidthRequest="150"/>
+                    <Picker x:Name="LocationFilterPicker"
+                            Title="Filter by Location"
+                            SelectedIndexChanged="OnFilterChanged"
+                            WidthRequest="150"/>
+                    <Picker x:Name="StatusFilterPicker"  Title="    Company Status" SelectedIndexChanged="OnFilterChanged" WidthRequest="150">
+                        <Picker.Items>
+                            <x:String>Active</x:String>
+                            <x:String>Dormant</x:String>
+                            <x:String>All</x:String>
+                        </Picker.Items>
+                    </Picker>
+                </HorizontalStackLayout>
+
+                <StackLayout x:Name="ErrorStateView"
+                 IsVisible="{Binding IsError, Mode=OneWay}"
+                 VerticalOptions="CenterAndExpand"
+                 HorizontalOptions="CenterAndExpand"
+                 BackgroundColor="#CCFFFFFF"  
+                    Padding="20"
+                 Spacing="10">
+                    <Label x:Name="ErrorMessageLabel"
+               Text="⚠️ Could not load companies."
+               FontSize="16"
+               HorizontalOptions="Center" />
+                    <Button Text="Retry"
+                Clicked="OnRetryClicked"
+                BackgroundColor="#007ACC"
+                TextColor="White"
+                CornerRadius="20"
+                Padding="10,5" />
+                </StackLayout>
+
+                <HorizontalStackLayout Spacing="12" Margin="0,0,0,12">
+                    <Button Text="⬇ Export to PDF"
+                            Clicked="OnExportToPdfClicked"
+                            BackgroundColor="#e53935"
+                            TextColor="White"
+                            CornerRadius="8"
+                            HorizontalOptions="StartAndExpand"/>
+                    <Button Text="⬇ Export to Excel"
+                            Clicked="OnExportToExcelClicked"
+                            BackgroundColor="#1e88e5"
+                            TextColor="White"
+                            CornerRadius="8"
+                            HorizontalOptions="EndAndExpand"/>
+                </HorizontalStackLayout>
+
+                <CollectionView x:Name="CompaniesCollectionView"
+                                EmptyView="No companies found."
+                                SelectionMode="None"
+                                Margin="0,0,0,20">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:Company">
+                            <Frame Style="{StaticResource Card}">
+                                <VerticalStackLayout Spacing="6">
+                                    <Grid ColumnDefinitions="*,Auto" Padding="0,0,0,6">
+                                        <VerticalStackLayout Spacing="2">
+                                            <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
+                                                <Label Text="🏢" FontSize="20" VerticalOptions="Center"/>
+                                                <Label Text="{Binding Name}" 
+               FontSize="30" 
+               FontAttributes="Bold"
+               TextColor="{Binding IsDormant, Converter={StaticResource BoolToGrayColorConverter}}" />
+                                                <Label Text=" (Dormant)"
+               IsVisible="{Binding IsDormant}"
+               TextColor="#e53935"
+               FontAttributes="Italic"
+               FontSize="15"
+               VerticalOptions="Center"
+               Margin="6,0,0,0"/>
+                                            </HorizontalStackLayout>
+
+                                            <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
+                                                <Label Text="📍" FontSize="20" TextColor="#757575" VerticalOptions="Center"/>
+                                                <Label Text="{Binding Location}" 
+               FontSize="20" 
+               TextColor="#757575"
+               FontAttributes="Bold"
+               VerticalOptions="Center"/>
+                                            </HorizontalStackLayout>
+                                        </VerticalStackLayout>
+
+
+                                        <Button Text="{Binding IsExpanded, Converter={StaticResource BoolToArrowConverter}}"
+                                                FontSize="50"
+                                                Style="{StaticResource IconButton}"
+                                                Clicked="OnToggleExpandClicked"
+                                                CommandParameter="{Binding}" />
+                                    </Grid>
+
+                                    <VerticalStackLayout IsVisible="{Binding IsExpanded}" Spacing="8" Padding="6,0,0,0">
+
+                                        <!-- Fields -->
+                                        <Label Text="Name:" Style="{StaticResource FieldLabel}"/>
+                                        <Frame Style="{StaticResource EntryFrameStyle}">
+                                            <Entry Text="{Binding Name}"
+                                                   IsReadOnly="{Binding IsEditing, Converter={StaticResource InverseBoolConverter}}"
+                                                   BackgroundColor="Transparent"/>
+                                        </Frame>
+
+                                        <Label Text="Location:" Style="{StaticResource FieldLabel}"/>
+                                        <Frame Style="{StaticResource EntryFrameStyle}">
+                                            <Entry Text="{Binding Location}"
+                                                   IsReadOnly="{Binding IsEditing, Converter={StaticResource InverseBoolConverter}}"
+                                                   BackgroundColor="Transparent"/>
+                                        </Frame>
+
+                                        <Label Text="Postal Address:" Style="{StaticResource FieldLabel}"/>
+                                        <Frame Style="{StaticResource EntryFrameStyle}">
+                                            <Entry Text="{Binding PostalAddress}"
+                                                   Placeholder="Postal address"
+                                                   IsReadOnly="{Binding IsEditing, Converter={StaticResource InverseBoolConverter}}"
+                                                   BackgroundColor="Transparent"/>
+                                        </Frame>
+
+                                        <Label Text="Nature of Work:" Style="{StaticResource FieldLabel}"/>
+                                        <Label Text="{Binding NatureOfWork}" 
+                                               IsVisible="{Binding IsEditing, Converter={StaticResource InverseBoolConverter}}"
+                                               FontSize="15" TextColor="#757575" FontAttributes="Italic"/>
+                                        <Picker Title="Select Nature of Work"
+                                                ItemsSource="{StaticResource NatureOfWorkList}"
+                                                SelectedItem="{Binding NatureOfWork, Mode=TwoWay}"
+                                                IsEnabled="{Binding IsEditing}"/>
+
+                                        <Label Text="File #:" Style="{StaticResource FieldLabel}"/>
+                                        <Frame Style="{StaticResource EntryFrameStyle}">
+                                            <Entry Text="{Binding FileNumber}"
+                                                   MaxLength="10"
+                                                   Keyboard="Numeric"
+                                                   Placeholder="File number"
+                                                   IsReadOnly="{Binding IsEditing, Converter={StaticResource InverseBoolConverter}}"
+                                                   BackgroundColor="Transparent"/>
+                                        </Frame>
+
+                                        <Label Text="Certificate #:" Style="{StaticResource FieldLabel}"/>
+                                        <Frame Style="{StaticResource EntryFrameStyle}">
+                                            <Entry Text="{Binding CertificateNumber}"
+                                                   MaxLength="10"
+                                                   Keyboard="Numeric"
+                                                   Placeholder="Certificate number"
+                                                   IsReadOnly="{Binding IsEditing, Converter={StaticResource InverseBoolConverter}}"
+                                                   BackgroundColor="Transparent"/>
+                                        </Frame>
+
+                                        <Label Text="Occupier:" Style="{StaticResource FieldLabel}"/>
+                                        <Frame Style="{StaticResource EntryFrameStyle}">
+                                            <Entry Text="{Binding Occupier}"
+                                                   Placeholder="Occupier / Person in charge"
+                                                   IsReadOnly="{Binding IsEditing, Converter={StaticResource InverseBoolConverter}}"
+                                                   BackgroundColor="Transparent"/>
+                                        </Frame>
+
+                                        <Label Text="Contact:" Style="{StaticResource FieldLabel}"/>
+                                        <Frame Style="{StaticResource EntryFrameStyle}">
+                                            <Entry Text="{Binding Contact}"
+                                                   Keyboard="Telephone"
+                                                   MaxLength="10"
+                                                   IsReadOnly="{Binding IsEditing, Converter={StaticResource InverseBoolConverter}}"
+                                                   BackgroundColor="Transparent"/>
+                                        </Frame>
+
+                                        <Label Text="Email:" Style="{StaticResource FieldLabel}"/>
+                                        <Frame Style="{StaticResource EntryFrameStyle}">
+                                            <Entry Text="{Binding Email}"
+                                                   Keyboard="Email"
+                                                   IsReadOnly="{Binding IsEditing, Converter={StaticResource InverseBoolConverter}}"
+                                                   BackgroundColor="Transparent"/>
+                                        </Frame>
+
+                                        <!-- New fields -->
+                                        <Label Text="Employees Male:" Style="{StaticResource FieldLabel}"/>
+                                        <Frame Style="{StaticResource EntryFrameStyle}">
+                                            <Entry Text="{Binding EmployeesMale}"
+                                                   Keyboard="Numeric"
+                                                   IsReadOnly="{Binding IsEditing, Converter={StaticResource InverseBoolConverter}}"
+                                                   BackgroundColor="Transparent"/>
+                                        </Frame>
+
+                                        <Label Text="Employees Female:" Style="{StaticResource FieldLabel}"/>
+                                        <Frame Style="{StaticResource EntryFrameStyle}">
+                                            <Entry Text="{Binding EmployeesFemale}"
+                                                   Keyboard="Numeric"
+                                                   IsReadOnly="{Binding IsEditing, Converter={StaticResource InverseBoolConverter}}"
+                                                   BackgroundColor="Transparent"/>
+                                        </Frame>
+
+                                        <Label Text="Applicant Names:" Style="{StaticResource FieldLabel}"/>
+                                        <Frame Style="{StaticResource EntryFrameStyle}">
+                                            <Entry Text="{Binding ApplicantNames}"
+                                                   IsReadOnly="{Binding IsEditing, Converter={StaticResource InverseBoolConverter}}"
+                                                   Placeholder="Applicants' full names"
+                                                   BackgroundColor="Transparent"/>
+                                        </Frame>
+
+                                        <Label Padding="0,2"
+                                               Text="{Binding RegisteredBy, StringFormat='Registered by: {0}'}"
+                                               FontSize="12" TextColor="Gray"/>
+
+                                        <Label Padding="0,2"
+                                               Text="{Binding RegistrationDate, StringFormat='Registered on: {0:dd MMM yyyy}'}"
+                                               FontSize="12" TextColor="Gray"/>
+
+                                        <Label Padding="0,2"
+                                               Text="{Binding EffectiveLastRenewalDate, StringFormat='Last renewed: {0:dd MMM yyyy}'}"
+                                               IsVisible="{Binding EffectiveLastRenewalDate, Converter={StaticResource NullToBoolConverter}}"
+                                               FontSize="12" TextColor="#2e7d32"/>
+
+                                        <HorizontalStackLayout Spacing="10" Margin="0,6,0,0">
+                                            <Button Text="🔄 Renew"
+                                                    BackgroundColor="#0288d1"
+                                                    TextColor="White"
+                                                    CornerRadius="8"
+                                                    Clicked="OnRenewCompanyClicked"/>
+                                            <Button Text="🗕 History"
+                                                    BackgroundColor="#757575"
+                                                    TextColor="White"
+                                                    CornerRadius="8"
+                                                    Clicked="OnViewRenewalHistoryClicked"/>
+                                        </HorizontalStackLayout>
+
+                                        <VerticalStackLayout IsVisible="{Binding Source={x:Reference page}, Path=IsEditable}"
+                                                             Spacing="10" Margin="0,12,0,0">
+                                            <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                                                <Label Text="Dormant:" VerticalOptions="Center" FontSize="15"/>
+                                                <Switch IsToggled="{Binding IsDormant}" IsEnabled="{Binding IsEditing}"/>
+                                            </HorizontalStackLayout>
+
+                                            <HorizontalStackLayout Spacing="12">
+                                                <Button Text="✏️ Edit"
+                                                        BackgroundColor="#4caf50"
+                                                        TextColor="White"
+                                                        CornerRadius="8"
+                                                        Clicked="OnEditClicked"/>
+                                                <Button Text="💾 Save"
+                                                        BackgroundColor="#2196f3"
+                                                        TextColor="White"
+                                                        CornerRadius="8"
+                                                        Clicked="OnSaveChangesClicked"/>
+                                            </HorizontalStackLayout>
+                                        </VerticalStackLayout>
+
+                                    </VerticalStackLayout>
+
+                                </VerticalStackLayout>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+        </ScrollView>
+    </RefreshView>
+</ContentPage>

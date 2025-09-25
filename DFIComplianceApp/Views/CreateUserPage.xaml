@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DFIComplianceApp.Views.CreateUserPage"
+             Title="Create New User"
+             BackgroundColor="#F2F2F7">
+
+    <ContentPage.Resources>
+        <Style x:Key="EntryCard" TargetType="Frame">
+            <Setter Property="BackgroundColor" Value="White"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="HasShadow" Value="True"/>
+        </Style>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="16">
+
+            <Label Text="Create New User"
+                   FontSize="28"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"
+                   TextColor="#333" />
+
+            <!-- Full Name -->
+            <Frame Style="{StaticResource EntryCard}">
+                <HorizontalStackLayout Spacing="10">
+                    <Image>
+                        <Image.Source>
+                            <FontImageSource Glyph="&#xe7fd;" Color="#1976D2" FontFamily="MaterialIcons" Size="24"/>
+                        </Image.Source>
+                    </Image>
+                    <Entry x:Name="fullNameEntry"
+                           Placeholder="Full Name *"
+                           FontSize="16"
+                           ClearButtonVisibility="WhileEditing"
+                           TextChanged="OnFullNameTextChanged"
+                           HorizontalOptions="FillAndExpand"/>
+                </HorizontalStackLayout>
+            </Frame>
+
+            <!-- Username -->
+            <Frame Style="{StaticResource EntryCard}">
+                <HorizontalStackLayout Spacing="10">
+                    <Image>
+                        <Image.Source>
+                            <FontImageSource Glyph="&#xf007;" Color="#1976D2" FontFamily="FontAwesomeSolid" Size="24"/>
+                        </Image.Source>
+                    </Image>
+                    <Entry x:Name="usernameEntry"
+                           Placeholder="Username *"
+                           FontSize="16"
+                           ClearButtonVisibility="WhileEditing"
+                           HorizontalOptions="FillAndExpand"/>
+                </HorizontalStackLayout>
+            </Frame>
+
+            <!-- DFI ID (Read Only) -->
+            <Frame Style="{StaticResource EntryCard}" IsVisible="False" x:Name="dfiIdFrame">
+                <HorizontalStackLayout Spacing="10">
+                    <Image>
+                        <Image.Source>
+                            <FontImageSource Glyph="&#xf2bb;" Color="#1976D2" FontFamily="FontAwesomeSolid" Size="24"/>
+                        </Image.Source>
+                    </Image>
+                    <Entry x:Name="dfiIdEntry"
+                           Placeholder="Generated DFI ID"
+                           FontSize="16"
+                           IsReadOnly="True"
+                           TextColor="Gray"
+                           BackgroundColor="#EEEEEE"
+                           HorizontalOptions="FillAndExpand"/>
+                </HorizontalStackLayout>
+            </Frame>
+
+            <!-- Email -->
+            <Frame Style="{StaticResource EntryCard}">
+                <HorizontalStackLayout Spacing="10">
+                    <Image>
+                        <Image.Source>
+                            <FontImageSource Glyph="&#xf0e0;" Color="#1976D2" FontFamily="FontAwesomeSolid" Size="24"/>
+                        </Image.Source>
+                    </Image>
+                    <Entry x:Name="emailEntry"
+                           Placeholder="Email *"
+                           FontSize="16"
+                           Keyboard="Email"
+                           ClearButtonVisibility="WhileEditing"
+                           HorizontalOptions="FillAndExpand"/>
+                </HorizontalStackLayout>
+            </Frame>
+
+            <!-- Phone -->
+            <Frame Style="{StaticResource EntryCard}">
+                <HorizontalStackLayout Spacing="10">
+                    <Image>
+                        <Image.Source>
+                            <FontImageSource Glyph="&#xf095;" Color="#1976D2" FontFamily="FontAwesomeSolid" Size="24"/>
+                        </Image.Source>
+                    </Image>
+                    <Entry x:Name="phoneEntry"
+                           Placeholder="Phone (10 digits) *"
+                           FontSize="16"
+                           Keyboard="Telephone"
+                           MaxLength="10"
+                           ClearButtonVisibility="WhileEditing"
+                           TextChanged="OnPhoneTextChanged"
+                           HorizontalOptions="FillAndExpand"/>
+                </HorizontalStackLayout>
+            </Frame>
+
+            <!-- Address -->
+            <Frame Style="{StaticResource EntryCard}">
+                <HorizontalStackLayout Spacing="10">
+                    <Image>
+                        <Image.Source>
+                            <FontImageSource Glyph="&#xf3c5;" Color="#1976D2" FontFamily="FontAwesomeSolid" Size="24"/>
+                        </Image.Source>
+                    </Image>
+                    <Editor x:Name="addressEditor"
+                            Placeholder="Contact Address *"
+                            AutoSize="TextChanges"
+                            FontSize="16"
+                            HorizontalOptions="FillAndExpand"
+                            BackgroundColor="Transparent"
+                            TextColor="#333"/>
+                </HorizontalStackLayout>
+            </Frame>
+
+            <!-- Role Picker -->
+            <Frame Style="{StaticResource EntryCard}">
+                <HorizontalStackLayout Spacing="10">
+                    <Image>
+                        <Image.Source>
+                            <FontImageSource Glyph="&#xf0c0;" Color="#1976D2" FontFamily="FontAwesomeSolid" Size="24"/>
+                        </Image.Source>
+                    </Image>
+                    <Picker x:Name="rolePicker"
+                            Title="Select Role *"
+                            FontSize="16"
+                            HorizontalOptions="FillAndExpand">
+                        <Picker.Items>
+                            <x:String>Director</x:String>
+                            <x:String>Inspector</x:String>
+                            <x:String>Secretary</x:String>
+                            <x:String>Administrator</x:String>
+                        </Picker.Items>
+                    </Picker>
+                </HorizontalStackLayout>
+            </Frame>
+
+            <!-- Info Note -->
+            <Frame BackgroundColor="#FFF3CD"
+                   CornerRadius="12"
+                   Padding="12"
+                   HasShadow="False"
+                   BorderColor="#FFEEBA">
+                <Label Text="The new user will receive an email with a secure link to set their own password."
+                       FontSize="13"
+                       TextColor="#856404"
+                       HorizontalTextAlignment="Center" />
+            </Frame>
+            <ActivityIndicator x:Name="loadingSpinner"
+                   IsRunning="False"
+                   IsVisible="False"
+                   Color="#1976D2"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center"
+                   WidthRequest="40"
+                   HeightRequest="40" />
+
+
+
+            <Button x:Name="CreateUserButton"
+        Text="Create User"
+        BackgroundColor="#1976D2"
+        TextColor="White"
+        FontSize="18"
+        CornerRadius="12"
+        HeightRequest="50"
+        Clicked="OnCreateUserClicked" />
+
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

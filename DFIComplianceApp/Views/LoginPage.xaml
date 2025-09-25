@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:DFIComplianceApp.ViewModels"
+             xmlns:views="clr-namespace:DFIComplianceApp.Views"
+             x:Class="DFIComplianceApp.Views.LoginPage"
+             x:DataType="viewmodels:LoginViewModel"
+             Title="Login"
+             BackgroundColor="{AppThemeBinding Light=#FAFAFA, Dark=#121212}">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- FontAwesome Icon Label Style -->
+            <Style x:Key="IconLabel" TargetType="Label">
+                <Setter Property="FontFamily" Value="FontAwesomeSolid" />
+                <Setter Property="FontSize" Value="20" />
+                <Setter Property="TextColor" Value="#4CAF50" />
+                <Setter Property="VerticalOptions" Value="Center" />
+                <Setter Property="WidthRequest" Value="32" />
+                <Setter Property="HorizontalTextAlignment" Value="Center" />
+            </Style>
+
+            <!-- Input Entry Style -->
+            <Style x:Key="InputEntry" TargetType="Entry">
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="TextColor" Value="{AppThemeBinding Light=Black, Dark=White}" />
+                <Setter Property="PlaceholderColor" Value="Gray" />
+                <Setter Property="Margin" Value="0,4" />
+                <Setter Property="HeightRequest" Value="44" />
+            </Style>
+
+            <!-- Buttons -->
+            <Style x:Key="PrimaryButton" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="#4CAF50" />
+                <Setter Property="TextColor" Value="White" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="CornerRadius" Value="10" />
+                <Setter Property="HeightRequest" Value="48" />
+                <Setter Property="Margin" Value="0,10" />
+            </Style>
+
+            <Style x:Key="LinkButton" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="Transparent" />
+                <Setter Property="TextColor" Value="Blue" />
+                <Setter Property="FontAttributes" Value="Italic" />
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="HorizontalOptions" Value="Center" />
+                <Setter Property="Margin" Value="0,4" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20"
+                             VerticalOptions="Center">
+
+            <!-- Logo -->
+            <Image Source="dfi.png"
+                   HeightRequest="180"
+                   Aspect="AspectFit"
+                   HorizontalOptions="Center"
+                   SemanticProperties.Description="DFI logo" />
+
+            <!-- Title -->
+            <Label Text="Department of Factories Inspectorate"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"
+                   TextColor="{AppThemeBinding Light=Black, Dark=White}"
+                   SemanticProperties.HeadingLevel="Level1" />
+
+            <!-- Role Picker -->
+            <Picker Title="Select Role"
+                    ItemsSource="{Binding Roles}"
+                    SelectedItem="{Binding SelectedRole}"
+                    FontSize="16"
+                    TextColor="{AppThemeBinding Light=Black, Dark=White}" />
+
+            <!-- Email Entry with FontAwesome user icon -->
+            <Grid ColumnDefinitions="32, *" VerticalOptions="Center" >
+                <Label Text="&#xf007;" Style="{StaticResource IconLabel}" />
+                <Entry Grid.Column="1"
+                       Placeholder="Email"
+                       Text="{Binding Username}"
+                       Style="{StaticResource InputEntry}"
+                       ReturnType="Next"
+                       ClearButtonVisibility="WhileEditing"
+                       FontAttributes="Italic" />
+            </Grid>
+
+            <!-- Password Entry with lock icon and eye toggle -->
+            <Grid ColumnDefinitions="32, *, 36" VerticalOptions="Center" >
+                <Label Text="&#xf023;" Style="{StaticResource IconLabel}" />
+                <Entry x:Name="PasswordEntry"
+                       Grid.Column="1"
+                       Placeholder="Password"
+                       Text="{Binding Password}"
+                       IsPassword="{Binding IsPasswordHidden}"
+                       Style="{StaticResource InputEntry}"
+                       ReturnType="Go"
+                       FontAttributes="Italic" />
+                <ImageButton Grid.Column="2"
+                             Source="{Binding PasswordToggleIcon}"
+                             Command="{Binding TogglePasswordVisibilityCommand}"
+                             BackgroundColor="Transparent"
+                             WidthRequest="36"
+                             HeightRequest="36"
+                             Margin="5,0,0,0"
+                             Padding="5"
+                             VerticalOptions="Center" />
+            </Grid>
+
+            <!-- Remember Me with FontAwesome info circle (no tooltip) -->
+            <HorizontalStackLayout Spacing="6" HorizontalOptions="Start">
+                <CheckBox IsChecked="{Binding RememberMe}"
+                          VerticalOptions="Center"
+                          Color="#4CAF50" />
+                <Label Text="Remember Me"
+                       FontSize="15"
+                       FontAttributes="Italic"
+                       TextColor="{AppThemeBinding Light=Black, Dark=White}"
+                       VerticalOptions="Center" />
+                <Label Text="&#xf05a;"
+                       FontFamily="FontAwesomeSolid"
+                       FontSize="18"
+                       TextColor="Gray"
+                       VerticalOptions="Center" />
+            </HorizontalStackLayout>
+
+            <!-- Activity Indicator -->
+            <ActivityIndicator IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}"
+                               HeightRequest="40"
+                               HorizontalOptions="Center"
+                               Color="#4CAF50" />
+
+            <!-- Login Button -->
+            <Button Text="Login"
+                    Command="{Binding LoginCommand}"
+                    IsEnabled="{Binding IsNotBusy}"
+                    Style="{StaticResource PrimaryButton}" />
+
+            <!-- Forgot Password -->
+            <Button Text="Forgot Password?"
+                    Command="{Binding ForgotPasswordCommand}"
+                    Style="{StaticResource LinkButton}" />
+
+            <!-- Sync Status View -->
+            <views:SyncStatusView />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

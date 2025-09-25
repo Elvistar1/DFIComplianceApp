@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="DFIComplianceApp.Views.SystemSettingsPage"
+    Title="System Settings"
+    BackgroundColor="#F4F6F8">
+
+    <Grid x:Name="MainGrid">
+
+        <ScrollView>
+            <VerticalStackLayout Padding="24" Spacing="20">
+
+                <!-- PAGE TITLE -->
+                <Label Text="⚙️  System Settings"
+                       FontSize="26"
+                       FontAttributes="Bold"
+                       HorizontalOptions="Center"
+                       AutomationProperties.IsInAccessibleTree="True"
+                       AutomationProperties.Name="System Settings Page Title" />
+
+                <!-- SETTINGS CARD -->
+                <Frame CornerRadius="14"
+                       Padding="18"
+                       BackgroundColor="White"
+                       BorderColor="#DDDDDD"
+                       AutomationProperties.IsInAccessibleTree="True"
+                       AutomationProperties.Name="Settings Container">
+
+                    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto"
+                          ColumnDefinitions="*,Auto"
+                          ColumnSpacing="12"
+                          RowSpacing="18">
+
+                        <!-- Maintenance Mode -->
+                        <Label Grid.Row="1"
+                               Text="Maintenance Mode"
+                               FontSize="16"
+                               VerticalOptions="Center"
+                               AutomationProperties.IsInAccessibleTree="True"
+                               AutomationProperties.Name="Maintenance Mode Label" />
+                        <Switch x:Name="MaintenanceSwitch"
+                                Grid.Row="1" Grid.Column="1"
+                                AutomationProperties.IsInAccessibleTree="True"
+                                AutomationProperties.Name="Maintenance Mode Switch"/>
+
+                        <!-- OpenRouter API Key -->
+                        <Label Grid.Row="4"
+                               Text="OpenRouter API Key"
+                               FontSize="16"
+                               VerticalOptions="Center"
+                               AutomationProperties.IsInAccessibleTree="True"
+                               AutomationProperties.Name="OpenRouter API Key Label" />
+                        <Entry x:Name="OpenAIKeyEntry"
+                               Grid.Row="4" Grid.Column="1"
+                               IsPassword="True"
+                               Placeholder="rk-..."
+                               AutomationProperties.IsInAccessibleTree="True"
+                               AutomationProperties.Name="OpenRouter API Key Entry"/>
+                    </Grid>
+                </Frame>
+
+                <!-- SAVE BUTTON -->
+                <Button Text="💾  Save Settings"
+                        Clicked="OnSaveClicked"
+                        BackgroundColor="#4CAF50"
+                        TextColor="White"
+                        CornerRadius="12"
+                        HeightRequest="48"
+                        AutomationProperties.IsInAccessibleTree="True"
+                        AutomationProperties.Name="Save Settings Button" />
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- INLINE LOADING OVERLAY -->
+        <Grid x:Name="LoadingOverlay" BackgroundColor="#80000000" IsVisible="False">
+            <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="12">
+                <ActivityIndicator IsRunning="True" Color="White" WidthRequest="60" HeightRequest="60"/>
+                <Label x:Name="LoadingLabel" TextColor="White" FontAttributes="Bold" FontSize="16"/>
+            </VerticalStackLayout>
+        </Grid>
+
+    </Grid>
+</ContentPage>

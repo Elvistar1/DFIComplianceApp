@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:System="clr-namespace:System;assembly=System.Runtime"
+             x:Class="DFIComplianceApp.Views.ScheduleInspectionPage"
+             Title="🗓️ Schedule Inspection"
+             BackgroundColor="#FAFAFA">
+
+    <Grid x:Name="MainGrid">
+
+        <ScrollView>
+            <VerticalStackLayout Padding="24" Spacing="16">
+
+                <!-- Page Title -->
+                <Label Text="🚩 Schedule New Inspection"
+                       FontSize="28"
+                       FontAttributes="Bold"
+                       TextColor="#1F2937"
+                       HorizontalOptions="Center" />
+
+                <!-- Nature of Work -->
+                <StackLayout>
+                    <Label Text="⚙️ Nature of Work"
+                           FontAttributes="Bold"
+                           FontSize="16"
+                           TextColor="#374151"
+                           Margin="0,0,0,6" />
+                    <Picker x:Name="NatureOfWorkPicker"
+                            Title="Select Nature of Work"
+                            SelectedIndexChanged="OnNatureOfWorkSelected" />
+                </StackLayout>
+
+                <!-- Company -->
+                <StackLayout>
+                    <Label Text="🏢 Company"
+                           FontAttributes="Bold"
+                           FontSize="16"
+                           TextColor="#374151"
+                           Margin="0,0,0,6" />
+                    <Picker x:Name="CompanyPicker"
+                            Title="Choose Company"
+                            SelectedIndexChanged="OnCompanySelected" />
+                </StackLayout>
+
+                <!-- File Number -->
+                <StackLayout>
+                    <Label Text="🆔 File Number"
+                           FontAttributes="Bold"
+                           FontSize="16"
+                           TextColor="#374151"
+                           Margin="0,0,0,6" />
+                    <Picker x:Name="FileNumberPicker"
+                            Title="Choose File Number"
+                            SelectedIndexChanged="OnFileNumberSelected" />
+                </StackLayout>
+
+                <!-- Location -->
+                <StackLayout>
+                    <Label Text="📍 Location"
+                           FontAttributes="Bold"
+                           FontSize="16"
+                           TextColor="#374151"
+                           Margin="0,0,0,6" />
+                    <Frame BackgroundColor="White"
+                           CornerRadius="10"
+                           Padding="10"
+                           HasShadow="False"
+                           BorderColor="#ddd">
+                        <Entry x:Name="LocationEntry"
+                               Placeholder="Enter location"
+                               FontSize="16"
+                               TextColor="#212121" />
+                    </Frame>
+                </StackLayout>
+
+                <!-- Contact -->
+                <StackLayout>
+                    <Label Text="📞 Contact"
+                           FontAttributes="Bold"
+                           FontSize="16"
+                           TextColor="#374151"
+                           Margin="0,0,0,6" />
+                    <Frame BackgroundColor="White"
+                           CornerRadius="10"
+                           Padding="10"
+                           HasShadow="False"
+                           BorderColor="#ddd">
+                        <Entry x:Name="ContactEntry"
+                               Placeholder="Phone or email"
+                               Keyboard="Telephone"
+                               FontSize="16"
+                               TextColor="#212121" />
+                    </Frame>
+                </StackLayout>
+
+                <!-- Occupier -->
+                <StackLayout>
+                    <Label Text="👤 Person In Charge"
+                           FontAttributes="Bold"
+                           FontSize="16"
+                           TextColor="#374151"
+                           Margin="0,0,0,6" />
+                    <Frame BackgroundColor="White"
+                           CornerRadius="10"
+                           Padding="10"
+                           HasShadow="False"
+                           BorderColor="#ddd">
+                        <Entry x:Name="OccupierEntry"
+                               Placeholder="Enter name"
+                               FontSize="16"
+                               TextColor="#212121" />
+                    </Frame>
+                </StackLayout>
+
+                <!-- Inspector -->
+                <StackLayout>
+                    <Label Text="🕵️ Inspector"
+                           FontAttributes="Bold"
+                           FontSize="16"
+                           TextColor="#374151"
+                           Margin="0,0,0,6" />
+                    <Picker x:Name="InspectorPicker"
+                            Title="Choose Inspector"
+                            ItemDisplayBinding="{Binding DisplayNameWithId}" />
+                </StackLayout>
+
+                <!-- Date -->
+                <StackLayout>
+                    <Label Text="📅 Inspection Date"
+                           FontAttributes="Bold"
+                           FontSize="16"
+                           TextColor="#374151"
+                           Margin="0,0,0,6" />
+                    <DatePicker x:Name="DatePicker"
+                                MinimumDate="{x:Static System:DateTime.Today}" />
+                </StackLayout>
+
+                <!-- Notes -->
+                <StackLayout>
+                    <Label Text="📝 Notes (optional)"
+                           FontAttributes="Bold"
+                           FontSize="16"
+                           TextColor="#374151"
+                           Margin="0,0,0,6" />
+                    <Frame BackgroundColor="White"
+                           CornerRadius="10"
+                           Padding="10"
+                           HasShadow="False"
+                           BorderColor="#ddd">
+                        <Editor x:Name="NotesEditor"
+                                Placeholder="Additional details or remarks..."
+                                FontSize="16"
+                                TextColor="#212121"
+                                HeightRequest="120" />
+                    </Frame>
+                </StackLayout>
+
+                <!-- Save Button -->
+                <Button BackgroundColor="#4CAF50"
+                        TextColor="White"
+                        Clicked="OnSaveClicked"
+                        FontFamily="FontAwesomeSolid"
+                        Text="&#xf0c7;  Save Inspection"
+                        HorizontalOptions="Center" />
+
+                <!-- Upcoming Inspections Header -->
+                <Label Text="📅 Upcoming Inspections"
+                       FontSize="22"
+                       FontAttributes="Bold"
+                       TextColor="#1F2937"
+                       Margin="0,24,0,6"
+                       HorizontalOptions="Center" />
+
+                <!-- Upcoming List -->
+                <CollectionView x:Name="InspectionCollection"
+                                EmptyView="No future inspections."
+                                Margin="0,0,0,20">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Frame Style="{StaticResource Card}">
+                                <VerticalStackLayout Spacing="6">
+                                    <Label Text="{Binding ScheduledDate, StringFormat='📅 {0:dd MMM yyyy}'}"
+                                           FontAttributes="Bold"
+                                           FontSize="16"
+                                           TextColor="#111827" />
+                                    <Label Text="{Binding CompanyName, StringFormat='🏢 {0}'}"
+                                           FontSize="14"
+                                           TextColor="#424242" />
+                                    <Label Text="{Binding DisplayInspectorNames, StringFormat='🕵️ {0}'}"
+                                           FontSize="14"
+                                           TextColor="#424242" />
+                                    <Label Text="{Binding Notes}"
+                                           FontSize="13"
+                                           TextColor="#616161"
+                                           LineBreakMode="TailTruncation" />
+                                </VerticalStackLayout>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- INLINE LOADING OVERLAY -->
+        <Grid x:Name="LoadingOverlay" BackgroundColor="#80000000" IsVisible="False">
+            <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="12">
+                <ActivityIndicator IsRunning="True" Color="White" WidthRequest="60" HeightRequest="60"/>
+                <Label x:Name="LoadingLabel" TextColor="White" FontAttributes="Bold" FontSize="16"/>
+            </VerticalStackLayout>
+        </Grid>
+
+    </Grid>
+</ContentPage>

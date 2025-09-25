@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<!-- ───── Permissions ───── -->
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+	<uses-permission android:name="android.permission.INTERNET" />
+	<!-- Optional: only on Android 13+ if you show notifications -->
+	<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+	<application
+        android:allowBackup="true"
+        android:icon="@mipmap/appicon"
+        android:roundIcon="@mipmap/appicon_round"
+		android:usesCleartextTraffic="true"
+        android:supportsRtl="true">
+		
+
+		<!-- ────────────────────────────────────────────────
+             MainActivity comes from the MAUI template.
+             The Java‑like name (crc64…) is auto‑generated;
+             you can leave it as is or copy it from the obj build.
+        ──────────────────────────────────────────────── -->
+		<activity
+            android:name="com.microsoft.maui.MauiAppCompatActivity"
+            android:exported="true"
+            android:theme="@style/Maui.SplashTheme"
+            android:launchMode="singleTask">
+
+			<!-- 🔗 Deep‑link intent filter -->
+			<intent-filter>
+				<action android:name="android.intent.action.VIEW" />
+
+				<category android:name="android.intent.category.DEFAULT" />
+				<category android:name="android.intent.category.BROWSABLE" />
+
+				<!-- Scheme + host must match the URL you send in the e‑mail -->
+				<data android:scheme="dfireset"
+                      android:host="reset" />
+			</intent-filter>
+
+		</activity>
+	</application>
+
+</manifest>

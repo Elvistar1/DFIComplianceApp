@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:converters="clr-namespace:DFIComplianceApp.Converters"
+             x:Class="DFIComplianceApp.Views.ManageUsersPage"
+             Title="Manage Users">
+
+    <!-- 🔧 local resources -->
+    <ContentPage.Resources>
+        <ResourceDictionary>
+
+            <!-- converters -->
+            <converters:HexToColorConverter x:Key="HexToColorConverter" />
+            <converters:InitialsConverter  x:Key="InitialsConverter"  />
+
+            <!-- card frame -->
+            <Style x:Key="CardStyle" TargetType="Frame">
+                <Setter Property="CornerRadius"    Value="12" />
+                <Setter Property="Padding"         Value="14" />
+                <Setter Property="BorderColor"     Value="#E0E0E0" />
+                <Setter Property="BackgroundColor" Value="White"   />
+            </Style>
+
+            <!-- flat button -->
+            <Style x:Key="FlatButton" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="#1976D2" />
+                <Setter Property="TextColor"       Value="White"   />
+                <Setter Property="CornerRadius"    Value="8"       />
+                <Setter Property="HeightRequest"   Value="38"      />
+            </Style>
+
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="14">
+
+            <!-- header -->
+            <Label Text="Inspector &amp; Secretary Accounts"
+                   FontSize="24"
+                   FontAttributes="Bold" />
+
+            <!-- 🔍 filter -->
+            <SearchBar Placeholder="Search by name or username"
+                       TextChanged="OnSearchTextChanged" />
+
+            <!-- ↕ sort -->
+            <Picker x:Name="SortPicker"
+                    Title="Sort by"
+                    SelectedIndex="0"
+                    SelectedIndexChanged="OnSortOptionChanged">
+                <Picker.Items>
+                    <x:String>Role</x:String>
+                    <x:String>Status</x:String>
+                </Picker.Items>
+            </Picker>
+
+            <!-- 📤 export row -->
+            <HorizontalStackLayout Spacing="10" Margin="0,2,0,4">
+                <Button Style="{StaticResource FlatButton}"
+                        Text="Export PDF"
+                        BackgroundColor="#D32F2F"
+                        Clicked="OnExportPdfClicked" />
+                <Button Style="{StaticResource FlatButton}"
+                        Text="Export Excel"
+                        BackgroundColor="#388E3C"
+                        Clicked="OnExportExcelClicked" />
+            </HorizontalStackLayout>
+
+            <!-- LIST -->
+            <CollectionView x:Name="UserCollectionView"
+                            EmptyView="No users found.">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <!-- main card -->
+                        <Frame Style="{StaticResource CardStyle}" Margin="0,6,0,0">
+                            <HorizontalStackLayout Spacing="14">
+
+                                <!-- avatar (initials) -->
+                                <Frame WidthRequest="48"
+                                       HeightRequest="48"
+                                       CornerRadius="24"
+                                       BackgroundColor="#ECEFF1"
+                                       Padding="0"
+                                       HasShadow="False">
+                                    <Label Text="{Binding FullName, Converter={StaticResource InitialsConverter}}"
+                                           FontAttributes="Bold"
+                                           FontSize="18"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="Center"
+                                           HorizontalTextAlignment="Center"
+                                           VerticalTextAlignment="Center"
+                                           TextColor="Black" />
+                                </Frame>
+
+                                <!-- details -->
+                                <VerticalStackLayout Spacing="6" HorizontalOptions="FillAndExpand">
+
+                                    <!-- full name -->
+                                    <HorizontalStackLayout>
+                                        <Label Text="Full Name:"
+                                               FontAttributes="Bold"
+                                               FontSize="14"
+                                               WidthRequest="100" />
+                                        <Label Text="{Binding FullName}" FontSize="14" />
+                                    </HorizontalStackLayout>
+
+                                    <!-- role -->
+                                    <HorizontalStackLayout>
+                                        <Label Text="Role:"
+                                               FontAttributes="Bold"
+                                               FontSize="14"
+                                               WidthRequest="100" />
+                                        <Label Text="{Binding Role}" FontSize="14" />
+                                    </HorizontalStackLayout>
+
+                                    <!-- username -->
+                                    <HorizontalStackLayout>
+                                        <Label Text="Username:"
+                                               FontAttributes="Bold"
+                                               FontSize="14"
+                                               WidthRequest="100" />
+                                        <Label Text="{Binding Username}"
+                                               FontAttributes="Italic"
+                                               FontSize="14" />
+                                    </HorizontalStackLayout>
+
+                                    <!-- DFI ID -->
+                                    <HorizontalStackLayout>
+                                        <Label Text="DFI ID:"
+           FontAttributes="Bold"
+           FontSize="14"
+           WidthRequest="100" />
+                                        <Label Text="{Binding DFIUserId}"
+           FontAttributes="Italic"
+           FontSize="14"
+           TextColor="DarkBlue" />
+                                    </HorizontalStackLayout>
+
+                                    <!-- status -->
+                                    <HorizontalStackLayout>
+                                        
+                                        <Label Text="{Binding StatusText}"
+                                               FontAttributes="Bold"
+                                               FontSize="20"
+                                               TextColor="{Binding StatusColorHex,
+                                                           Converter={StaticResource HexToColorConverter}}" />
+                                    </HorizontalStackLayout>
+
+                                    <BoxView HeightRequest="1" Color="#E0E0E0" Margin="0,8,0,4" />
+
+                                    <!-- buttons -->
+                                    <HorizontalStackLayout Spacing="10">
+                                        <Button Text="{Binding ButtonText}"
+                                                Style="{StaticResource FlatButton}"
+                                                BackgroundColor="#455A64"
+                                                CommandParameter="{Binding}"
+                                                Clicked="OnToggleStatusClicked" />
+
+                                        <Button Text="Edit"
+                                                Style="{StaticResource FlatButton}"
+                                                 CommandParameter="{Binding .}"
+    Clicked="OnEditUserClicked"
+    IsEnabled="{Binding CanEdit}"
+    BackgroundColor="{Binding CanEdit, Converter={StaticResource BoolToColorConverter}}" />
+                                    </HorizontalStackLayout>
+
+                                </VerticalStackLayout>
+                            </HorizontalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -1,0 +1,44 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DFIComplianceApp.Views.EmailDetailOutboxPage"
+             Title="Outbox Email Details">
+
+    <ScrollView Padding="10">
+        <VerticalStackLayout Spacing="8">
+
+            <Label Text="From:" FontAttributes="Bold" />
+            <Label Text="{Binding From}" />
+
+            <Label Text="Subject:" FontAttributes="Bold" />
+            <Label Text="{Binding Subject}" />
+
+            <Label Text="Received:" FontAttributes="Bold" />
+            <Label Text="{Binding ReceivedDate, StringFormat='{0:MMM dd, yyyy HH:mm}'}" />
+
+            <Label Text="Body:" FontAttributes="Bold" />
+
+            <ScrollView HeightRequest="300">
+                <Label Text="{Binding BodyPlainText}" />
+            </ScrollView>
+
+            <Button Text="Approve"
+                    Clicked="OnApproveClicked"
+                    BackgroundColor="Green"
+                    TextColor="White"
+                    CornerRadius="10" />
+
+            <Button Text="Schedule Appointment"
+                    Clicked="OnScheduleAppointmentClicked"
+                    BackgroundColor="DarkCyan"
+                    TextColor="White"
+                    CornerRadius="10" />
+
+            <Button Text="Delete"
+                    Clicked="OnDeleteClicked"
+                    BackgroundColor="Red"
+                    TextColor="White"
+                    CornerRadius="10" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="DFIComplianceApp.Views.InspectionHistoryPage"
+    Title="Inspection History"
+    BackgroundColor="#fafafa">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style x:Key="Card" TargetType="Frame">
+                <Setter Property="CornerRadius" Value="12"/>
+                <Setter Property="Padding" Value="14"/>
+                <Setter Property="Margin" Value="4,6"/>
+                <Setter Property="HasShadow" Value="True"/>
+                <Setter Property="BorderColor" Value="#e0e0e0"/>
+                <Setter Property="BackgroundColor" Value="White"/>
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <RefreshView x:Name="RefreshView" Refreshing="OnRefresh">
+        <ScrollView>
+            <VerticalStackLayout Padding="20" Spacing="16">
+
+                <Label Text="📅 All Inspections"
+                       FontSize="24"
+                       FontAttributes="Bold"
+                       TextColor="#37474F"/>
+
+                <SearchBar x:Name="SearchBar"
+                           Placeholder="Search by company…"
+                           TextChanged="OnSearchChanged"
+                           CancelButtonColor="Gray"/>
+
+                <HorizontalStackLayout Spacing="10">
+                    <Picker x:Name="YearPicker"
+                            Title="Year"
+                            WidthRequest="110"
+                            SelectedIndexChanged="OnFilterChanged"/>
+                    <Picker x:Name="CompanyPicker"
+                            Title="Company"
+                            WidthRequest="170"
+                            SelectedIndexChanged="OnFilterChanged"/>
+                </HorizontalStackLayout>
+
+                <HorizontalStackLayout x:Name="InspectorPickerLayout"
+                                       Spacing="10"
+                                       IsVisible="True">
+                    <Picker x:Name="InspectorPicker"
+                            Title="Inspector"
+                            WidthRequest="170"
+                            SelectedIndexChanged="OnFilterChanged"/>
+                </HorizontalStackLayout>
+
+                <HorizontalStackLayout Spacing="10">
+                    <Button Text="⬇ PDF"
+                            Clicked="OnExportPdf"
+                            BackgroundColor="#f44336"
+                            TextColor="White"/>
+                    <Button Text="⬇ Excel"
+                            Clicked="OnExportExcel"
+                            BackgroundColor="#1976d2"
+                            TextColor="White"/>
+                </HorizontalStackLayout>
+
+                <CollectionView x:Name="InspectionCollection"
+                                SelectionMode="Single"
+                                SelectionChanged="OnRowTapped">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Frame Style="{StaticResource Card}">
+                                <VerticalStackLayout Spacing="4">
+                                    <Label Text="{Binding CompanyName}" FontAttributes="Bold"/>
+                                    <Label Text="{Binding Location}" FontSize="12" TextColor="DarkGray"/>
+                                    <Label Text="{Binding PlannedDate, StringFormat='Planned: {0:dd MMM yyyy}'}"
+           FontSize="12"
+           TextColor="Gray"/>
+                                    <Label Text="{Binding CompletedDate, StringFormat='Completed: {0:dd MMM yyyy}'}"
+           FontSize="12"
+           TextColor="#2e7d32"
+           IsVisible="{Binding CompletedDate.HasValue}"/>
+                                    <Label Text="{Binding InspectorName, StringFormat='Inspector: {0}'}"
+           FontSize="12"/>
+                                </VerticalStackLayout>
+
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </RefreshView>
+</ContentPage>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="DFIComplianceApp.Views.OutboxPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Name="Root"
+    Title="Email Outbox">
+
+    <CollectionView ItemsSource="{Binding Pending}">
+        <!-- Empty‑state -->
+        <CollectionView.EmptyView>
+            <Label Text="🎉 No queued e‑mails"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center"
+                   TextColor="Gray" />
+        </CollectionView.EmptyView>
+
+        <CollectionView.ItemTemplate>
+            <DataTemplate>
+                <!-- SwipeView: mobile gesture -->
+                <SwipeView>
+                    <SwipeView.LeftItems>
+                        <SwipeItems Mode="Reveal">
+                            <SwipeItem Text="Resend"
+                                       BackgroundColor="Green"
+                                       Command="{Binding BindingContext.ResendCommand,
+                                                         Source={x:Reference Root}}"
+                                       CommandParameter="{Binding .}" />
+                            <SwipeItem Text="Delete"
+                                       BackgroundColor="Maroon"
+                                       Command="{Binding BindingContext.DeleteCommand,
+                                                         Source={x:Reference Root}}"
+                                       CommandParameter="{Binding .}" />
+                        </SwipeItems>
+                    </SwipeView.LeftItems>
+
+                    <!-- Row with desktop buttons -->
+                    <Grid Padding="8" ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="6">
+                        <!-- Recipient + subject -->
+                        <StackLayout Grid.Column="0" Spacing="-2">
+                            <Label Text="{Binding To}" FontAttributes="Bold" />
+                            <Label Text="{Binding Subject}"
+                                   LineBreakMode="TailTruncation"
+                                   MaxLines="1" />
+                        </StackLayout>
+
+                        <!-- Date -->
+                        <Label Grid.Column="1"
+                               Text="{Binding CreatedAt, StringFormat='{0:g}'}"
+                               FontSize="11"
+                               TextColor="Gray"
+                               VerticalOptions="Center" />
+
+                        <!-- ⟳ Resend button -->
+                        <Button Grid.Column="2"
+                                Text="⟳"
+                                FontSize="20"
+                                WidthRequest="50"
+                                BackgroundColor="Blue"
+                                Command="{Binding BindingContext.ResendCommand,
+                                                  Source={x:Reference Root}}"
+                                CommandParameter="{Binding .}" />
+
+                        <!-- 🗑 Delete button -->
+                        <Button Grid.Column="3"
+                                Text="🗑"
+                                FontSize="14"
+                                WidthRequest="32"
+                                BackgroundColor="IndianRed"
+                                Command="{Binding BindingContext.DeleteCommand,
+                                                  Source={x:Reference Root}}"
+                                CommandParameter="{Binding .}" />
+                    </Grid>
+                </SwipeView>
+            </DataTemplate>
+        </CollectionView.ItemTemplate>
+    </CollectionView>
+</ContentPage>

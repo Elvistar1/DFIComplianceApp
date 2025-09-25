@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="DFIComplianceApp.Views.CompanyRegistrationPage"
+    Title="Register Company"
+    BackgroundColor="#fafafa">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <x:Array x:Key="NatureOfWorkList" Type="{x:Type x:String}">
+                <x:String>Oil &amp; Gas Stations</x:String>
+                <x:String>Food Processing Companies</x:String>
+                <x:String>Wood Processing Companies</x:String>
+                <x:String>Warehouses</x:String>
+                <x:String>Sachet Water Production</x:String>
+                <x:String>Offices</x:String>
+                <x:String>Shops</x:String>
+                <x:String>Manufacturing Companies</x:String>
+            </x:Array>
+
+            <Style x:Key="Card" TargetType="Frame">
+                <Setter Property="CornerRadius" Value="12"/>
+                <Setter Property="Padding" Value="18"/>
+                <Setter Property="BackgroundColor" Value="White"/>
+                <Setter Property="BorderColor" Value="#E0E0E0"/>
+            </Style>
+
+            <Style x:Key="Input" TargetType="Entry">
+                <Setter Property="BackgroundColor" Value="White"/>
+                <Setter Property="PlaceholderColor" Value="#9E9E9E"/>
+                <Setter Property="Margin" Value="0,2"/>
+                <Setter Property="HeightRequest" Value="44"/>
+                <Setter Property="FontSize" Value="15"/>
+                <Setter Property="HorizontalOptions" Value="FillAndExpand"/>
+                <Setter Property="VerticalOptions" Value="Center"/>
+            </Style>
+
+            <!-- Separate style for Picker -->
+            <Style x:Key="PickerInput" TargetType="Picker">
+                <Setter Property="BackgroundColor" Value="White"/>
+                <Setter Property="Margin" Value="0,2"/>
+                <Setter Property="HeightRequest" Value="44"/>
+                <Setter Property="FontSize" Value="15"/>
+            </Style>
+
+            <!-- FontAwesome icon Label style -->
+            <Style x:Key="IconLabel" TargetType="Label">
+                <Setter Property="FontFamily" Value="FontAwesomeSolid"/>
+                <Setter Property="FontSize" Value="18"/>
+                <Setter Property="TextColor" Value="#2196F3"/>
+                <Setter Property="VerticalOptions" Value="Center"/>
+                <Setter Property="WidthRequest" Value="28"/>
+                <Setter Property="HorizontalTextAlignment" Value="Center"/>
+            </Style>
+
+            <Style x:Key="ButtonPrimary" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="#2196F3"/>
+                <Setter Property="TextColor" Value="White"/>
+                <Setter Property="CornerRadius" Value="8"/>
+                <Setter Property="FontAttributes" Value="Bold"/>
+                <Setter Property="HeightRequest" Value="44"/>
+                <Setter Property="HorizontalOptions" Value="FillAndExpand"/>
+            </Style>
+
+            <Style x:Key="ButtonSecondary" TargetType="Button" BasedOn="{StaticResource ButtonPrimary}">
+                <Setter Property="BackgroundColor" Value="#FF9800"/>
+            </Style>
+
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="18">
+
+            <Label Text="🏭 Register a New Company"
+                   FontSize="26"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"
+                   TextColor="#37474F"/>
+
+            <Frame Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="12">
+
+                    <!-- Basic company details without icons -->
+                    <Entry x:Name="NameEntry" Placeholder="Company name *" Style="{StaticResource Input}"/>
+                    <Entry x:Name="LocationEntry" Placeholder="Location *" Style="{StaticResource Input}"/>
+                    <Entry x:Name="PostalEntry" Placeholder="Postal address *" Style="{StaticResource Input}"/>
+
+                    <Picker x:Name="NatureOfWorkPicker"
+                            Title="Select Nature of Work *"
+                            ItemsSource="{StaticResource NatureOfWorkList}"
+                            Style="{StaticResource PickerInput}"
+                            HeightRequest="60"/>
+
+                    <!-- File Number Options -->
+                    <Label Text="File Number * (Numbers Only, Unique, Minimum 2 Digits)" FontAttributes="Bold" FontSize="14"/>
+                    <HorizontalStackLayout Spacing="8">
+                        <Button Text="Auto Generate" Clicked="OnAutoGenerateFileNumberClicked"
+                                Style="{StaticResource ButtonPrimary}" />
+                        <Button Text="Add Manually" Clicked="OnAddManualFileNumberClicked"
+                                Style="{StaticResource ButtonSecondary}" />
+                    </HorizontalStackLayout>
+
+                    <Entry x:Name="FileNumberEntry" Placeholder="File number *"
+                           Style="{StaticResource Input}" IsEnabled="False"
+                           Keyboard="Numeric"/>
+
+                    <!-- Certificate Number with icon -->
+                    <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                        <Label Text="&#xf0a3;" Style="{StaticResource IconLabel}" />
+                        <!-- certificate icon -->
+                        <Entry x:Name="CertificateNumberEntry"
+                               Placeholder="Certificate number (optional)"
+                               Style="{StaticResource Input}" 
+                               Keyboard="Numeric"
+                               TextChanged="CertificateNumberEntry_TextChanged"/>
+                    </HorizontalStackLayout>
+
+                    <!-- Occupier / Person in charge with icon -->
+                    <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                        <Label Text="&#xf007;" Style="{StaticResource IconLabel}" />
+                        <!-- user icon -->
+                        <Entry x:Name="OccupierEntry"
+                               Placeholder="Occupier / Person in charge *"
+                               Style="{StaticResource Input}" 
+                               Keyboard="Text"
+                               TextChanged="OccupierEntry_TextChanged"/>
+                    </HorizontalStackLayout>
+
+                    <!-- Contact with icon -->
+                    <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                        <Label Text="&#xf095;" Style="{StaticResource IconLabel}" />
+                        <!-- phone icon -->
+                        <Entry x:Name="ContactEntry" 
+                               Placeholder="Contact (10-digit phone) *"
+                               Style="{StaticResource Input}" 
+                               Keyboard="Telephone" 
+                               MaxLength="10"
+                               TextChanged="ContactEntry_TextChanged"/>
+                    </HorizontalStackLayout>
+
+                    <!-- Email with icon -->
+                    <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                        <Label Text="&#xf0e0;" Style="{StaticResource IconLabel}" />
+                        <!-- envelope icon -->
+                        <Entry x:Name="EmailEntry" Placeholder="Email *"
+                               Style="{StaticResource Input}" Keyboard="Email"/>
+                    </HorizontalStackLayout>
+
+                    <!-- Employee count -->
+                    <Label Text="Number of persons employed/intended to employ"
+                           FontAttributes="Bold" FontSize="14" Margin="0,6,0,0"/>
+
+                    <HorizontalStackLayout Spacing="10">
+                        <Picker x:Name="MalePicker" Title="Males" Style="{StaticResource PickerInput}" WidthRequest="110" HeightRequest="60"/>
+                        <Picker x:Name="FemalePicker" Title="Females" Style="{StaticResource PickerInput}" WidthRequest="110" HeightRequest="60"/>
+                    </HorizontalStackLayout>
+
+                    <!-- Applicants -->
+                    <Label Text="How many applicants?" FontAttributes="Bold" FontSize="14"/>
+                    <Picker x:Name="ApplicantCountPicker"
+                            Title="Select total number"
+                            SelectedIndexChanged="OnApplicantCountChanged"
+                            Style="{StaticResource PickerInput}" HeightRequest="60" />
+
+                    <VerticalStackLayout x:Name="ApplicantsStack" Spacing="6"/>
+
+                    <!-- Meta info -->
+                    <Frame BackgroundColor="#f5f5f5" CornerRadius="8" Padding="10,6">
+                        <VerticalStackLayout Spacing="3">
+                            <Label Text="Registration details" FontAttributes="Bold" FontSize="14"/>
+                            <Label x:Name="RegisteredByLabel" FontSize="12" TextColor="Gray"/>
+                            <Label x:Name="RegistrationDateLabel" FontSize="12" TextColor="Gray"/>
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <ActivityIndicator x:Name="LoadingIndicator"
+                       IsRunning="False"
+                       IsVisible="False"
+                       Color="#1976D2"
+                       HeightRequest="30"
+                       HorizontalOptions="Center"/>
+
+                    <Button
+                        x:Name="RegisterButton"
+                        Text="✅ Register company"
+                        Clicked="OnRegisterClicked"
+                        BackgroundColor="#4CAF50"
+                        TextColor="White"
+                        CornerRadius="10" />
+
+                </VerticalStackLayout>
+            </Frame>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

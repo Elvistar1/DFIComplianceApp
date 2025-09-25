@@ -1,0 +1,27 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DFIComplianceApp.Views.EmailDetailPage"
+             Title="Email Details"
+             BackgroundColor="{AppThemeBinding Light=White, Dark=#121212}">
+
+    <ScrollView Padding="15">
+        <VerticalStackLayout Spacing="12">
+
+            <Label Text="From:" FontAttributes="Bold" FontSize="Medium" />
+            <Label Text="{Binding From}" FontSize="Small" LineBreakMode="TailTruncation" />
+
+            <Label Text="Subject:" FontAttributes="Bold" FontSize="Medium" />
+            <Label Text="{Binding Subject}" FontSize="Small" LineBreakMode="TailTruncation" />
+
+            <Label Text="Received:" FontAttributes="Bold" FontSize="Medium" />
+            <Label Text="{Binding ReceivedDate, StringFormat='{0:MMM dd, yyyy HH:mm}'}" FontSize="Small" />
+
+            <Label Text="Body:" FontAttributes="Bold" FontSize="Medium" />
+
+            <Frame HasShadow="True" CornerRadius="8" Padding="0" Margin="0">
+                <WebView x:Name="EmailBodyWebView" HeightRequest="500" MinimumHeightRequest="200" />
+            </Frame>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

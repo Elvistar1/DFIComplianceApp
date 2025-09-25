@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<resources>
+	<!-- Main App Theme -->
+	<style name="MainTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+		<!-- Customize Material colors -->
+		<item name="colorPrimary">#6200EE</item>
+		<item name="colorPrimaryVariant">#3700B3</item>
+		<item name="colorOnPrimary">#FFFFFF</item>
+		<item name="colorSecondary">#03DAC6</item>
+		<item name="colorOnSecondary">#000000</item>
+	</style>
+
+	<!-- Keep splash theme for startup -->
+	<style name="Maui.SplashTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+		
+	</style>
+</resources>

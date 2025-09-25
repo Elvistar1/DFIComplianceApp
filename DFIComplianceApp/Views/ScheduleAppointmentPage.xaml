@@ -1,0 +1,88 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:sys="clr-namespace:System;assembly=netstandard"
+             x:Class="DFIComplianceApp.Views.ScheduleAppointmentPage"
+             Title="📅 Schedule Appointment">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+
+            <!-- 🔄 Loading Indicator -->
+            <ActivityIndicator x:Name="LoadingIndicator"
+                               IsVisible="False"
+                               IsRunning="False"
+                               Color="Blue"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center" />
+
+            <!-- Appointment Form -->
+            <Label Text="🏢 Company" FontAttributes="Bold" />
+            <Picker x:Name="CompanyPicker"
+                    Title="Select Company"
+                    SelectedIndexChanged="OnCompanySelected" />
+
+            <Label Text="📍 Location" FontAttributes="Bold" />
+            <Picker x:Name="LocationPicker"
+                    Title="Select Location"
+                    SelectedIndexChanged="OnLocationSelected" />
+
+            <Label Text="👤 Occupier" FontAttributes="Bold" />
+            <Entry x:Name="OccupierEntry" IsReadOnly="True" />
+
+            <Label Text="📧 Email Contact" FontAttributes="Bold" />
+            <Entry x:Name="EmailEntry" IsReadOnly="True" />
+
+            <Label Text="🎯 Purpose" FontAttributes="Bold" />
+            <Entry x:Name="PurposeEntry" Placeholder="Enter purpose of visit" />
+
+            <Label Text="📅 Appointment Date" FontAttributes="Bold" />
+            <DatePicker x:Name="AppointmentDatePicker" Date="{x:Static sys:DateTime.Today}" />
+
+            <Label Text="⏰ Appointment Time" FontAttributes="Bold" />
+            <TimePicker x:Name="AppointmentTimePicker" Time="09:00:00" />
+
+            <Button Text="📌 Schedule Appointment"
+                    Clicked="OnScheduleClicked"
+                    BackgroundColor="Green"
+                    TextColor="White" />
+
+            <!-- Filters, Search -->
+            <Label Text="🔍 Filter &amp; Search" FontAttributes="Bold" Margin="0,20,0,5"/>
+            <HorizontalStackLayout Spacing="10">
+                <Picker x:Name="CompanyFilterPicker" Title="Filter by Company"
+                        SelectedIndexChanged="OnCompanyFilterChanged"/>
+                <DatePicker x:Name="DateFilterPicker"
+                            Date="{x:Static sys:DateTime.Today}"
+                            DateSelected="OnDateFilterChanged"/>
+            </HorizontalStackLayout>
+            <Entry x:Name="SearchEntry"
+                   Placeholder="Search purpose or location..."
+                   TextChanged="OnSearchTextChanged"/>
+
+            <!-- Appointment History -->
+            <CollectionView x:Name="AppointmentHistoryView"
+                            SelectionMode="None"
+                            HeightRequest="300">
+                <CollectionView.Header>
+                    <Label Text="📜 Appointment History"
+                           FontAttributes="Bold"
+                           FontSize="Medium"
+                           Margin="0,0,0,5"/>
+                </CollectionView.Header>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Padding="10" Margin="0,0,0,10" CornerRadius="10" BackgroundColor="#F0F0F0">
+                            <VerticalStackLayout>
+                                <Label Text="{Binding CompanyName}" FontAttributes="Bold"/>
+                                <Label Text="{Binding MeetingDate, StringFormat='Date: {0:dd MMM yyyy hh:mm tt}'}"/>
+                                <Label Text="{Binding Subject, StringFormat='Purpose: {0}'}"/>
+                                <Label Text="{Binding Location, StringFormat='Location: {0}'}"/>
+                            </VerticalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

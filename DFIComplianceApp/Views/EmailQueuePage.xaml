@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DFIComplianceApp.Views.EmailQueuePage"
+             Title="Email Queue">
+
+    <VerticalStackLayout Padding="10" Spacing="8">
+
+        <!-- Header with badge -->
+        <HorizontalStackLayout VerticalOptions="Center" Spacing="8">
+            <Label Text="Email Queue"
+                   FontSize="22"
+                   FontAttributes="Bold"
+                   TextColor="{AppThemeBinding Light=Black, Dark=White}" />
+
+            <!-- Badge Frame -->
+            <Frame x:Name="EmailBadgeFrame"
+                   Padding="6,2"
+                   CornerRadius="12"
+                   BackgroundColor="Red"
+                   IsVisible="False"
+                   HasShadow="False"
+                   VerticalOptions="Center">
+                <Label x:Name="EmailBadgeLabel"
+                       FontAttributes="Bold"
+                       TextColor="White"
+                       FontSize="14"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"/>
+            </Frame>
+        </HorizontalStackLayout>
+
+        <!-- Refresh button -->
+        <Button Text="⟳ Refresh"
+                Clicked="OnRefreshClicked"
+                BackgroundColor="{AppThemeBinding Light=#1976d2, Dark=#90caf9}"
+                TextColor="White"
+                CornerRadius="10"
+                Padding="8,4"
+                FontSize="14" />
+
+        <!-- Email list -->
+        <CollectionView x:Name="EmailListView"
+                        SelectionMode="Single"
+                        SelectionChanged="OnEmailSelected">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Padding="8"
+                           CornerRadius="10"
+                           BorderColor="{AppThemeBinding Light=#ccc, Dark=#555}">
+                        <VerticalStackLayout>
+                            <Label Text="{Binding Subject}"
+                                   FontAttributes="Bold"
+                                   FontSize="16" />
+                            <Label Text="{Binding From}"
+                                   FontSize="14"
+                                   TextColor="Gray" />
+                            <Label Text="{Binding ReceivedAt, StringFormat='{0:MMM dd, yyyy HH:mm}'}"
+                                   FontSize="12"
+                                   TextColor="Gray" />
+                        </VerticalStackLayout>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+    </VerticalStackLayout>
+</ContentPage>

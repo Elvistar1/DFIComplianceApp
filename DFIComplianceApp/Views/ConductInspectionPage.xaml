@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+    xmlns:converters="clr-namespace:DFIComplianceApp.Converters"
+    x:Class="DFIComplianceApp.Views.ConductInspectionPage"
+    Title="Conduct Inspection"
+    BackgroundColor="#fafafa">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:IndexToColorConverter x:Key="IndexToColorConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ContentPage.Content>
+        <!-- Root grid to hold main content + overlay -->
+        <Grid RowDefinitions="*,Auto">
+
+            <!-- === MAIN CONTENT === -->
+            <ScrollView Grid.Row="0">
+                <VerticalStackLayout Padding="20" Spacing="18">
+
+                    <Label Text="Inspection Information" FontAttributes="Bold" FontSize="18" />
+                    <Label x:Name="CompanyNameLabel" Text="Company: (auto)" FontSize="16" TextColor="#333" />
+                    <Label x:Name="ScheduledDateLabel" Text="Date: (auto)" FontSize="16" TextColor="#555" />
+
+                    <Label Text="File Number:" FontAttributes="Bold" FontSize="16" />
+                    <Label x:Name="FileNumberLabel" Text="(auto)" FontSize="16" TextColor="#333" />
+
+                    <Label Text="Location:" FontAttributes="Bold" FontSize="16" />
+                    <Label x:Name="LocationLabel" Text="(auto)" FontSize="16" TextColor="#333" />
+
+                    <Label Text="Contact:" FontAttributes="Bold" FontSize="16" />
+                    <Label x:Name="ContactLabel" Text="(auto)" FontSize="16" TextColor="#333" />
+
+                    <Label Text="Person In Charge:" FontAttributes="Bold" FontSize="16" />
+                    <Label x:Name="OccupierLabel" Text="(auto)" FontSize="16" TextColor="#333" />
+
+                    <Picker x:Name="CategoryPicker" Title="Select category" IsVisible="False" />
+                    <Picker x:Name="CompanyPicker" Title="Select company" IsVisible="False" />
+                    <DatePicker x:Name="InspectionDatePicker" Date="{x:Static sys:DateTime.Today}" Format="dd MMM yyyy" IsVisible="False" />
+
+                    <Label Text="Checklist" FontAttributes="Bold" />
+                    <CollectionView x:Name="ChecklistCollectionView" SelectionMode="None">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Frame Padding="12" Margin="0,8" CornerRadius="12" BorderColor="#ddd"
+                                       BackgroundColor="{Binding QuestionNumber, Converter={StaticResource IndexToColorConverter}}"
+                                       HasShadow="True">
+                                    <VerticalStackLayout Spacing="10">
+                                        <Label>
+                                            <Label.FormattedText>
+                                                <FormattedString>
+                                                    <Span Text="{Binding QuestionNumber}" FontAttributes="Bold" />
+                                                    <Span Text=". " />
+                                                    <Span Text="{Binding Question}" />
+                                                </FormattedString>
+                                            </Label.FormattedText>
+                                        </Label>
+                                        <HorizontalStackLayout>
+                                            <Label Text="Compliant?" VerticalOptions="Center" />
+                                            <Switch IsToggled="{Binding Answer}" />
+                                        </HorizontalStackLayout>
+                                        <Entry Text="{Binding Notes}" Placeholder="Notes / remarks…" />
+                                        <CollectionView ItemsSource="{Binding PhotoPaths}" ItemsLayout="Grid, 3"
+                                                        SelectionMode="None" HeightRequest="90">
+                                            <CollectionView.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Image Source="{Binding .}" HeightRequest="60" WidthRequest="60" Aspect="AspectFill">
+                                                        <Image.GestureRecognizers>
+                                                            <TapGestureRecognizer Command="{Binding Source={x:Reference ChecklistCollectionView}, Path=BindingContext.ImageTappedCommand}" CommandParameter="{Binding .}" />
+                                                        </Image.GestureRecognizers>
+                                                    </Image>
+                                                </DataTemplate>
+                                            </CollectionView.ItemTemplate>
+                                        </CollectionView>
+                                        <Button Text="📷 Add Photo"
+                                                CommandParameter="{Binding .}"
+                                                Clicked="OnAttachPhotoClicked" />
+                                    </VerticalStackLayout>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </ScrollView>
+
+            <!-- Save button -->
+            <Button x:Name="SaveButton"
+                    Grid.Row="1"
+                    Text="💾 Save Inspection"
+                    Clicked="OnSaveClicked"
+                    BackgroundColor="#1976D2"
+                    TextColor="White"
+                    CornerRadius="12"
+                    Padding="16"
+                    Margin="20"
+                    HorizontalOptions="Fill" />
+
+            <!-- === LOADING OVERLAY === -->
+            <Grid x:Name="LoadingOverlay"
+                  IsVisible="False"
+                  BackgroundColor="#80000000"
+                  VerticalOptions="FillAndExpand"
+                  HorizontalOptions="FillAndExpand"
+                  RowSpan="2"
+                  ZIndex="99">
+                <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="15">
+                    <ActivityIndicator IsRunning="True" Color="White" WidthRequest="60" HeightRequest="60"/>
+                    <Label Text="Saving..." TextColor="White" FontSize="18" FontAttributes="Bold"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Grid>
+
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

@@ -1,0 +1,59 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DFIComplianceApp.Views.RenewalHistoryPage"
+             Title="🏢 Renewal History">
+
+    <VerticalStackLayout Padding="10" Spacing="10">
+
+        <!-- Search -->
+        <SearchBar x:Name="SearchBar"
+                   Placeholder="Search company or renewed by..."
+                   TextChanged="OnSearchTextChanged" />
+
+        <!-- Sorting -->
+        <Picker x:Name="SortPicker"
+                Title="Sort by"
+                SelectedIndexChanged="OnSortChanged">
+            <Picker.Items>
+                <x:String>Name (A-Z)</x:String>
+                <x:String>Name (Z-A)</x:String>
+                <x:String>Latest Renewal (Newest First)</x:String>
+                <x:String>Latest Renewal (Oldest First)</x:String>
+            </Picker.Items>
+        </Picker>
+
+        <!-- Year Filter -->
+        <Picker x:Name="YearPicker"
+                Title="Filter by Year"
+                SelectedIndexChanged="OnYearChanged" />
+
+        <!-- Export Buttons -->
+        <HorizontalStackLayout Spacing="10">
+            <Button Text="📄 Export to Word" Clicked="OnExportWordClicked" />
+            <Button Text="📊 Export to Excel" Clicked="OnExportExcelClicked" />
+        </HorizontalStackLayout>
+
+        <!-- Scrollable List -->
+        <ScrollView>
+            <CollectionView x:Name="CompaniesCollectionView"
+                            SelectionMode="Single"
+                            ItemsSource="{Binding}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Margin="5" Padding="10" BorderColor="#ddd" CornerRadius="10">
+                            <VerticalStackLayout>
+                                <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="16" />
+                                <Label Text="{Binding Location}" FontSize="13" TextColor="Gray" />
+                                <Label Text="{Binding LatestRenewalDate, StringFormat='Last renewal: {0:dd MMM yyyy}'}"
+                                       FontSize="12" TextColor="DarkGreen" />
+                                <Label Text="{Binding RenewedBy, StringFormat='Renewed by: {0}'}"
+                                       FontSize="12" TextColor="DarkBlue" />
+                            </VerticalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </ScrollView>
+
+    </VerticalStackLayout>
+</ContentPage>

@@ -1,0 +1,65 @@
+﻿<Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:DFIComplianceApp"
+             xmlns:converters="clr-namespace:DFIComplianceApp.Converters"
+             x:Class="DFIComplianceApp.App">
+
+    <Application.Resources>
+        <ResourceDictionary>
+
+            <!-- ✅ Merged styles -->
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
+                <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- ✅ Converters (global, no duplicates) -->
+            <converters:NullToBoolConverter x:Key="NullToBool" />
+            <converters:RiskLevelToEmojiConverter x:Key="RiskLevelToEmojiConverter" />
+            <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
+            <converters:BoolToEyeSource x:Key="BoolToEyeSource" />
+            <converters:BoolToArrowConverter x:Key="BoolToArrowConverter" />
+            <converters:OverdueColorConverter x:Key="OverdueColorConverter" />
+            <converters:InitialsConverter x:Key="InitialsConverter" />
+            <converters:BoolToGrayColorConverter x:Key="BoolToGrayColorConverter"/>
+            <converters:PhotoToImageSourceConverter x:Key="PhotoToImageSource" />
+            <converters:BoolToYesNoConverter x:Key="YesNo" />
+            <converters:ListNullOrEmptyToBoolConverter x:Key="ListHasItems" />
+            <converters:Base64ToImageSourceConverter x:Key="Base64ToImage" />
+            <converters:ListHasItemsConverter x:Key="ListHasItemsConverter" />
+            <converters:FlaggedToVisibleConverter x:Key="FlaggedToVisibleConverter" />
+
+            <converters:BoolToColorConverter x:Key="BoolToColorConverter"
+                                             TrueColor="LightGreen"
+                                             FalseColor="White" />
+
+            <!-- ✅ Button Style with Visual States -->
+            <Style x:Key="AnimatedButtonStyle" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="#4CAF50" />
+                <Setter Property="TextColor" Value="White" />
+                <Setter Property="CornerRadius" Value="8" />
+                <Setter Property="Padding" Value="12,6" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup>
+                            <VisualState x:Name="Pressed">
+                                <VisualState.Setters>
+                                    <Setter Property="Scale" Value="0.97" />
+                                    <Setter Property="BackgroundColor" Value="#45A049" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Normal">
+                                <VisualState.Setters>
+                                    <Setter Property="Scale" Value="1.0" />
+                                    <Setter Property="BackgroundColor" Value="#4CAF50" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DFIComplianceApp.Views.UpcomingInspectionsPage"
+             Title="Upcoming Inspections"
+             BackgroundColor="#fafafa">
+
+    <VerticalStackLayout Padding="20" Spacing="10">
+
+        <!-- Upcoming inspections list -->
+        <CollectionView x:Name="InspectionsView"
+                        ItemsSource="{Binding UpcomingInspections}"
+                        SelectionMode="None"
+                        IsVisible="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}">
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Padding="12"
+                           BackgroundColor="White"
+                           CornerRadius="10"
+                           HasShadow="True">
+
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer 
+                                Command="{Binding Source={x:Reference Name=InspectionsView}, Path=BindingContext.InspectionTappedCommand}"
+                                CommandParameter="{Binding .}" />
+                        </Frame.GestureRecognizers>
+
+                        <VerticalStackLayout Spacing="4">
+
+                            <Label Text="{Binding CompanyName}" FontSize="18" FontAttributes="Bold" />
+
+                            <Label Text="{Binding NatureOfWork, StringFormat='Nature of Work: {0}'}" FontSize="14" />
+
+                            <Label Text="{Binding FileNumber, StringFormat='File #: {0}'}" FontSize="14" />
+
+                            <Label Text="{Binding Location, StringFormat='Location: {0}'}" FontSize="14" />
+
+                            <Label Text="{Binding Occupier, StringFormat='Person In Charge: {0}'}" FontSize="14" />
+
+                            <Label Text="{Binding Contact, StringFormat='Contact: {0}'}" FontSize="14" />
+
+                            <Label Text="{Binding ScheduledDate, StringFormat='Scheduled Date: {0:dd MMM yyyy}'}" FontSize="14" />
+
+                            <Label Text="{Binding DisplayInspectorNames, StringFormat='Inspector(s): {0}'}"
+                                   FontSize="14"
+                                   LineBreakMode="WordWrap" />
+
+                            <Label Text="{Binding Notes, StringFormat='Notes: {0}'}"
+                                   FontSize="13"
+                                   LineBreakMode="WordWrap"
+                                   IsVisible="{Binding Notes, Converter={StaticResource NullToBoolConverter}}" />
+
+                        </VerticalStackLayout>
+
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Loading spinner -->
+        <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+
+        <!-- Export button -->
+        <Button Text="Export to Excel"
+                Command="{Binding ExportCommand}"
+                BackgroundColor="#4CAF50"
+                TextColor="White"
+                CornerRadius="8"
+                Padding="12" />
+
+    </VerticalStackLayout>
+</ContentPage>

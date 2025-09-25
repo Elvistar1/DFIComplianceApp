@@ -1,0 +1,15 @@
+{
+  "byFileNumber": {
+    "$fileNo": {
+      ".write": "!data.exists()"
+    }
+  },
+  "byCertificateNumber": {
+    "$certNo": {
+      ".write": "!data.exists()"
+    }
+  }
+}
+
+
+

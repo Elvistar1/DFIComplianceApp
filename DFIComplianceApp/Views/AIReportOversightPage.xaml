@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:conv="clr-namespace:DFIComplianceApp.Converters"
+             xmlns:helpers="clr-namespace:DFIComplianceApp.Helpers"
+             x:Class="DFIComplianceApp.Views.AIReportOversightPage"
+             Title="AI Report Oversight"
+             BackgroundColor="#f9f9f9">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style x:Key="StatusChip" TargetType="Frame">
+                <Setter Property="Padding" Value="8,4"/>
+                <Setter Property="CornerRadius" Value="14"/>
+                <Setter Property="IsClippedToBounds" Value="True"/>
+                <Setter Property="HasShadow" Value="False"/>
+                <Setter Property="MinimumHeightRequest" Value="28"/>
+                <Setter Property="HorizontalOptions" Value="Start"/>
+            </Style>
+            <conv:StringNotNullOrEmptyConverter x:Key="NotEmpty"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto,Auto,*">
+        <!-- Header -->
+        <Grid Padding="20,16" BackgroundColor="{AppThemeBinding Light=#1565C0, Dark=#004B8D}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Label Text="🧠 AI Report Oversight" FontAttributes="Bold" FontSize="20" TextColor="White" VerticalOptions="Center"/>
+            <Button Grid.Column="1" Text="⟳" FontSize="18" TextColor="White" BackgroundColor="Transparent" Clicked="OnRefreshClicked"/>
+        </Grid>
+        <!-- Filters -->
+        <Grid Row="1" Padding="12" RowDefinitions="Auto,Auto">
+            <SearchBar x:Name="SearchBar" Placeholder="Search premises…" TextChanged="OnFilterChanged" Grid.Row="0"/>
+            <HorizontalStackLayout Grid.Row="1" Spacing="10" VerticalOptions="Center">
+                <Label Text="Filter by Status:" FontSize="14" TextColor="#555" VerticalOptions="Center"/>
+                <Picker x:Name="StatusPicker" ItemsSource="{x:Static helpers:StatusOptionsHelper.Values}" SelectedIndexChanged="OnFilterChanged" SelectedIndex="0" WidthRequest="140"/>
+            </HorizontalStackLayout>
+        </Grid>
+        <!-- Main Content: Use a Grid with star sizing for the CollectionView -->
+        <Grid Row="2" Column="0" ColumnSpan="2">
+            <RefreshView x:Name="ReportsRefreshView" Refreshing="OnRefresh" VerticalOptions="FillAndExpand">
+                <CollectionView x:Name="ReportsCollectionView"
+                                ItemsLayout="VerticalList"
+                                ItemSizingStrategy="MeasureFirstItem"
+                                RemainingItemsThreshold="5"
+                                RemainingItemsThresholdReached="OnLoadMore"
+                                SelectionMode="None"
+                                VerticalOptions="FillAndExpand">
+                    <CollectionView.EmptyView>
+                        <Label Text="No AI reports yet." HorizontalOptions="Center" TextColor="#888" FontSize="14" Margin="0,40"/>
+                    </CollectionView.EmptyView>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Frame CornerRadius="18" Padding="16" Margin="0,10" BorderColor="#ddd" HasShadow="False" BackgroundColor="White">
+                                <Frame.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnReportTapped" CommandParameter="{Binding .}"/>
+                                </Frame.GestureRecognizers>
+                                <VerticalStackLayout Spacing="12">
+                                    <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
+                                        <Label Grid.Row="0" Grid.Column="0" Text="{Binding Premises}" FontSize="18" FontAttributes="Bold"/>
+                                        <Frame Style="{StaticResource StatusChip}" Grid.Row="0" Grid.Column="1">
+                                            <Label Text="{Binding Status}" FontSize="12" TextColor="White"/>
+                                            <Frame.Triggers>
+                                                <DataTrigger TargetType="Frame" Binding="{Binding Status}" Value="Queued">
+                                                    <Setter Property="BackgroundColor" Value="#ff9800"/>
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Frame" Binding="{Binding Status}" Value="Analysing">
+                                                    <Setter Property="BackgroundColor" Value="#2196F3"/>
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Frame" Binding="{Binding Status}" Value="Completed">
+                                                    <Setter Property="BackgroundColor" Value="#4CAF50"/>
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Frame" Binding="{Binding Status}" Value="Approved">
+                                                    <Setter Property="BackgroundColor" Value="#1565C0"/>
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Frame" Binding="{Binding Status}" Value="Flagged">
+                                                    <Setter Property="BackgroundColor" Value="#EF6C00"/>
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Frame" Binding="{Binding Status}" Value="Failed">
+                                                    <Setter Property="BackgroundColor" Value="#E53935"/>
+                                                </DataTrigger>
+                                            </Frame.Triggers>
+                                        </Frame>
+                                        <Label Grid.Row="1" Grid.Column="0" Text="{Binding NatureOfWork}" FontSize="13" TextColor="#666"/>
+                                        <Label Grid.Row="1" Grid.Column="1" Text="{Binding CreatedAt, StringFormat='{}Submitted {0:dd MMM yyyy HH:mm}'}" FontSize="11" TextColor="#999"/>
+                                    </Grid>
+                                    <Label Text="{Binding Advice}" FontSize="14" TextColor="#444" LineBreakMode="WordWrap" MaxLines="4" IsVisible="{Binding Advice, Converter={StaticResource NotEmpty}}"/>
+                                    <HorizontalStackLayout HorizontalOptions="End" Spacing="12">
+                                        <ActivityIndicator IsVisible="{Binding IsAnalysing}" IsRunning="{Binding IsAnalysing}" HeightRequest="20" WidthRequest="20" VerticalOptions="Center"/>
+                                        <Button Text="Analyse" IsVisible="{Binding CanAnalyse}" IsEnabled="{Binding AnalyseButtonEnabled}" Clicked="OnAnalyseClicked" CommandParameter="{Binding .}"/>
+                                        <Button Text="Approve" IsVisible="{Binding CanApprove}" BackgroundColor="#2e7d32" TextColor="White" Clicked="OnApproveClicked" CommandParameter="{Binding .}"/>
+                                        <Button Text="Flag" IsVisible="{Binding CanFlag}" BackgroundColor="#f57c00" TextColor="White" Clicked="OnFlagClicked" CommandParameter="{Binding .}"/>
+                                        <Button Text="Retry AI Only"
+                                                BackgroundColor="#3949AB"
+                                                TextColor="White"
+                                                Clicked="OnRetryAiOnlyClicked"
+                                                CommandParameter="{Binding .}"
+                                                IsVisible="{Binding CanRetryAiOnly}" />
+                                        <Button Text="Unflag" 
+                                                IsVisible="{Binding Status, Converter={StaticResource FlaggedToVisibleConverter}}"
+                                                CommandParameter="{Binding .}"
+                                                Clicked="OnUnflagClicked"/>
+                                        <Button Text="Send for Re-analysis"
+                                                IsVisible="{Binding Status, Converter={StaticResource FlaggedToVisibleConverter}}"
+                                                CommandParameter="{Binding .}"
+                                                Clicked="OnSendForReanalysisClicked"
+                                                BackgroundColor="#1976D2"
+                                                TextColor="White"/>
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </RefreshView>
+            <ActivityIndicator x:Name="LoadingIndicator"
+                   IsVisible="{Binding IsLoading}"
+                   IsRunning="{Binding IsLoading}"
+                   HeightRequest="40"
+                   HorizontalOptions="Center"
+                   VerticalOptions="End"
+                   Margin="0,10"/>
+        </Grid>
+    </Grid>
+</ContentPage>

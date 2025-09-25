@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DFIComplianceApp.Views.AIReportDetailPage"
+             Title="Report Detail"
+             BackgroundColor="{AppThemeBinding Light=#fafafa, Dark=#1d1d1d}">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem IconImageSource="ic_back.png"
+                     Text="Back"
+                     Priority="0"
+                     Order="Primary"
+                     Clicked="OnCloseClicked" />
+        <ToolbarItem Text="Export PDF"
+                     Order="Secondary"
+                     Clicked="OnExportPdfClicked" />
+        <ToolbarItem Text="Print"
+                     Order="Secondary"
+                     Clicked="OnPrintClicked" />
+    </ContentPage.ToolbarItems>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="14">
+
+            <!-- Logo -->
+            <Image Source="company_logo.png"
+                   HeightRequest="80"
+                   Aspect="AspectFit"
+                   HorizontalOptions="Center"
+                   Margin="0,0,0,10" />
+
+            <!-- Title -->
+            <Label Text="DFI Compliance Inspection Report"
+                   FontAttributes="Bold"
+                   FontSize="20"
+                   TextColor="{AppThemeBinding Light=#000000, Dark=#ffffff}"
+                   HorizontalOptions="Center"
+                   Margin="0,0,0,10" />
+
+            <!-- Report Metadata -->
+            <Label x:Name="PremisesLabel"
+                   FontSize="18"
+                   FontAttributes="Bold"
+                   TextColor="{AppThemeBinding Light=#000000, Dark=#ffffff}" />
+
+            <Label x:Name="NatureLabel"
+                   FontSize="14"
+                   TextColor="{AppThemeBinding Light=#666666, Dark=#aaaaaa}" />
+
+            <Label x:Name="StatusLabel"
+                   FontSize="13"
+                   TextColor="{AppThemeBinding Light=#666666, Dark=#aaaaaa}" />
+
+            <!-- Advice Section -->
+            <Label Text="Summary Advice:"
+                   FontSize="15"
+                   FontAttributes="Bold"
+                   Margin="0,12,0,0"
+                   TextColor="{AppThemeBinding Light=#000000, Dark=#ffffff}" />
+
+            <ScrollView HeightRequest="250" VerticalOptions="FillAndExpand">
+                <Editor x:Name="AdviceEditor"
+                        AutoSize="TextChanges"
+                        VerticalOptions="FillAndExpand"
+                        TextColor="{AppThemeBinding Light=#000000, Dark=#ffffff}"
+                        BackgroundColor="White" />
+            </ScrollView>
+
+            <!-- Copy/Share Buttons -->
+            <HorizontalStackLayout Spacing="12" Margin="0,20,0,0">
+                <Button Text="Copy" Clicked="OnCopyClicked" />
+                <Button Text="Share" Clicked="OnShareClicked" />
+                <Button
+    Text="Send Recommendation"
+    IsEnabled="{Binding CanSendRecommendation}"
+    Clicked="OnSendRecommendationClicked" />
+            </HorizontalStackLayout>
+            
+            <Label
+    x:Name="SentStatusLabel"
+    Text="{Binding SentStatusText}"
+    FontAttributes="Italic"
+    TextColor="DarkGreen"
+    Margin="0,8,0,0"/>
+
+            <!-- Checklist Section -->
+            <Label Text="Checklist Review:"
+                   FontSize="15"
+                   FontAttributes="Bold"
+                   Margin="0,20,0,0"
+                   TextColor="{AppThemeBinding Light=#000000, Dark=#ffffff}"
+                   IsVisible="{Binding HasChecklist}" />
+
+            <CollectionView x:Name="ChecklistView"
+                            Margin="0,10,0,0"
+                            IsVisible="{Binding HasChecklist}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Padding="10"
+                               CornerRadius="10"
+                               Margin="0,6"
+                               BackgroundColor="White"
+                               BorderColor="#e0e0e0">
+                            <VerticalStackLayout Spacing="6">
+                                <Label Text="{Binding Question}"
+                                       FontAttributes="Bold" />
+                                <Label Text="{Binding Compliant, StringFormat='Compliant: {0}'}" />
+                                <Label Text="{Binding Notes}"
+                                       FontSize="12"
+                                       TextColor="Gray"
+                                       IsVisible="{Binding Notes, Converter={StaticResource NullToBool}}" />
+                                <ScrollView Orientation="Horizontal"
+                                            HeightRequest="90"
+                                            IsVisible="{Binding PhotoPaths.Count, Converter={StaticResource NullToBool}}">
+                                    <HorizontalStackLayout Spacing="10"
+                                                           BindableLayout.ItemsSource="{Binding PhotoPaths}">
+                                        <Image HeightRequest="80"
+                                               WidthRequest="80"
+                                               Aspect="AspectFill"
+                                               Margin="0"
+                                               Source="{Binding .}" />
+                                    </HorizontalStackLayout>
+                                </ScrollView>
+                            </VerticalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- Loading Indicator -->
+            <ActivityIndicator x:Name="LoadingIndicator"
+                               IsRunning="{Binding IsLoading, Mode=OneWay}"
+                               IsVisible="{Binding IsLoading, Mode=OneWay}"
+                               HeightRequest="40"
+                               Margin="0,10" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

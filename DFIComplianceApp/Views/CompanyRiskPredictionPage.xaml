@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:DFIComplianceApp.ViewModels"
+             xmlns:converters="clr-namespace:DFIComplianceApp.Converters"
+             xmlns:models="clr-namespace:DFIComplianceApp.Models"
+             xmlns:sys="clr-namespace:System;assembly=netstandard"
+             x:Class="DFIComplianceApp.Views.CompanyRiskPredictionPage"
+             x:DataType="vm:CompanyRiskPredictionViewModel"
+             Title="📊 Company Risk Prediction"
+             BackgroundColor="#F9FAFB">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:RiskLevelToColorConverter x:Key="RiskLevelToColorConverter" />
+            <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
+            <converters:NullToBoolConverter x:Key="NullToBoolConverter" />
+            <converters:RiskLevelToEmojiConverter x:Key="RiskLevelToEmojiConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="24" Spacing="24">
+
+            <!-- Heading -->
+            <Label Text="📈 Company Risk Predictor"
+                   FontSize="28"
+                   FontAttributes="Bold"
+                   TextColor="#111827"
+                   HorizontalOptions="Center" />
+
+            <!-- Company Search + Picker Card -->
+            <Frame CornerRadius="14"
+                   Padding="16"
+                   BorderColor="#E5E7EB"
+                   HasShadow="True"
+                   BackgroundColor="White">
+                <VerticalStackLayout Spacing="10">
+
+                    <Label Text="🔍 Search Company"
+                           FontAttributes="Bold"
+                           TextColor="#4B5563"
+                           FontSize="16" />
+
+                    <!-- Rounded background for SearchBar wrapper -->
+                    <Frame Padding="0"
+                           HasShadow="False"
+                           BackgroundColor="#F3F4F6"
+                           CornerRadius="12"
+                           IsClippedToBounds="True">
+                        <SearchBar Placeholder="Type to filter companies"
+                                   Text="{Binding CompanySearchText}"
+                                   TextColor="#111827"
+                                   PlaceholderColor="#9CA3AF"
+                                   FontSize="15"
+                                   HeightRequest="44"
+                                   BackgroundColor="Transparent"
+                                   />
+                    </Frame>
+
+                    <!-- Rounded background for Picker wrapper -->
+                    <Frame Padding="0"
+       HasShadow="False"
+       BackgroundColor="#F3F4F6"
+       CornerRadius="12"
+       IsClippedToBounds="True"
+       HeightRequest="65"
+       WidthRequest="280"
+       HorizontalOptions="Start">
+                        <Picker Title="  Choose a Company"
+            ItemsSource="{Binding FilteredCompanies}"
+            ItemDisplayBinding="{Binding Name}"
+            SelectedItem="{Binding SelectedCompany}"
+            FontSize="15"
+            BackgroundColor="Transparent" />
+                    </Frame>
+
+
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Selected Company Location -->
+            <Label Text="{Binding SelectedCompany.Location}"
+       FontSize="14"
+       TextColor="#6B7280"
+       IsVisible="{Binding SelectedCompany, Converter={StaticResource NullToBoolConverter}}"
+       Margin="10,0,0,0" />
+
+
+            <!-- Predict Button -->
+            <Button Text="⚡ Predict Risk"
+                    Command="{Binding PredictRiskCommand}"
+                    BackgroundColor="#2563EB"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    CornerRadius="14"
+                    HeightRequest="50"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}"
+                    HorizontalOptions="FillAndExpand" />
+
+            <!-- Loading Indicator -->
+            <ActivityIndicator IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}"
+                               Color="#2563EB"
+                               HeightRequest="30"
+                               HorizontalOptions="Center" />
+            <!-- Prediction Result Box -->
+            <Frame CornerRadius="16"
+       Padding="12"
+       Margin="8,12"
+       HasShadow="True"
+       IsVisible="{Binding RiskLevel, Converter={StaticResource NullToBoolConverter}}"
+       BackgroundColor="{Binding RiskLevel, Converter={StaticResource RiskLevelToColorConverter}}"
+       HorizontalOptions="Center"
+       VerticalOptions="Center">
+                <HorizontalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="8">
+                    <Label Text="{Binding RiskLevel, Converter={StaticResource RiskLevelToEmojiConverter}}"
+               FontSize="24"
+               TextColor="White"
+               VerticalOptions="Center" />
+                    <Label Text="{Binding RiskLevel}"
+               FontSize="20"
+               FontAttributes="Bold"
+               TextColor="White"
+               VerticalOptions="Center" />
+                </HorizontalStackLayout>
+            </Frame>
+
+            <!-- Export and Share Buttons -->
+            <HorizontalStackLayout Spacing="16" HorizontalOptions="Center" Margin="0,0,0,20">
+                <Button Text="📄 Export to PDF"
+                        Command="{Binding ExportToPdfCommand}"
+                        BackgroundColor="#6B7280"
+                        TextColor="White"
+                        CornerRadius="14"
+                        Padding="20,12"
+                        WidthRequest="160" />
+                <Button Text="🔗 Share"
+                        Command="{Binding ShareCommand}"
+                        BackgroundColor="#10B981"
+                        TextColor="White"
+                        CornerRadius="14"
+                        Padding="20,12"
+                        WidthRequest="140" />
+            </HorizontalStackLayout>
+
+            <!-- History Section -->
+            <Label Text="🕘 Prediction History"
+                   FontSize="22"
+                   FontAttributes="Bold"
+                   TextColor="#1F2937"
+                   Margin="0,20,0,12"
+                   HorizontalOptions="Start" />
+
+            <!-- Search, Sort, and Date Filter Card -->
+            <Frame CornerRadius="14"
+                   Padding="16"
+                   BorderColor="#E5E7EB"
+                   HasShadow="True"
+                   BackgroundColor="White">
+
+                <VerticalStackLayout Spacing="16">
+
+                    <!-- Text Filter -->
+                    <Frame Padding="0"
+                           HasShadow="False"
+                           BackgroundColor="#F3F4F6"
+                           CornerRadius="12"
+                           IsClippedToBounds="True">
+                        <SearchBar Placeholder="Search by company or location"
+                                   Text="{Binding HistorySearchText}"
+                                   TextColor="#111827"
+                                   PlaceholderColor="#9CA3AF"
+                                   FontSize="15"
+                                   HeightRequest="44"
+                                   BackgroundColor="Transparent" />
+                    </Frame>
+
+                    <!-- Sort Option Picker -->
+                    <Frame Padding="0"
+       HasShadow="False"
+       BackgroundColor="#F3F4F6"
+       CornerRadius="12"
+       IsClippedToBounds="True"
+       HeightRequest="65"
+       WidthRequest="280"
+       HorizontalOptions="Start">
+                        <Picker Title="  Sort by"
+            ItemsSource="{Binding SortOptions}"
+            SelectedItem="{Binding SelectedSortOption}"
+            FontSize="15"
+            BackgroundColor="Transparent" />
+                    </Frame>
+
+
+                    <!-- Date Range Filters -->
+                    <HorizontalStackLayout Spacing="12" VerticalOptions="Center">
+
+                        <VerticalStackLayout Spacing="4" HorizontalOptions="FillAndExpand">
+                            <Label Text="Start Date" TextColor="#4B5563" FontSize="13" />
+                            <Frame Padding="0"
+                                   HasShadow="False"
+                                   BackgroundColor="#F3F4F6"
+                                   CornerRadius="12"
+                                   IsClippedToBounds="True"
+                                   HeightRequest="40">
+                                <DatePicker Date="{Binding FromDate}"
+                                            Format="MMM dd, yyyy"
+                                            MinimumDate="2000-01-01"
+                                            MaximumDate="{x:Static sys:DateTime.Now}"
+                                            BackgroundColor="Transparent" />
+                            </Frame>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="4" HorizontalOptions="FillAndExpand">
+                            <Label Text="End Date" TextColor="#4B5563" FontSize="13" />
+                            <Frame Padding="0"
+                                   HasShadow="False"
+                                   BackgroundColor="#F3F4F6"
+                                   CornerRadius="12"
+                                   IsClippedToBounds="True"
+                                   HeightRequest="40">
+                                <DatePicker Date="{Binding ToDate}"
+                                            Format="MMM dd, yyyy"
+                                            MinimumDate="2000-01-01"
+                                            MaximumDate="{x:Static sys:DateTime.Now}"
+                                            BackgroundColor="Transparent" />
+                            </Frame>
+                        </VerticalStackLayout>
+
+                    </HorizontalStackLayout>
+
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Prediction History List -->
+            <CollectionView ItemsSource="{Binding FilteredPredictionHistory}"
+                            Margin="0"
+                            BackgroundColor="Transparent"
+                            HeightRequest="320"
+                            SelectionMode="None"
+                            VerticalOptions="FillAndExpand"
+                            IsGrouped="False">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:RiskPredictionHistory">
+                        <Frame Padding="14"
+                               Margin="6,4"
+                               CornerRadius="14"
+                               BorderColor="#E5E7EB"
+                               BackgroundColor="White"
+                               HasShadow="True">
+                            <VerticalStackLayout Spacing="6">
+                                <Label Text="{Binding CompanyName}"
+                                       FontAttributes="Bold"
+                                       FontSize="16"
+                                       TextColor="#1F2937" />
+                                <Label Text="{Binding Location}"
+                                       FontSize="14"
+                                       TextColor="#6B7280" />
+                                <HorizontalStackLayout Spacing="16" VerticalOptions="Center">
+                                    <Label Text="{Binding RiskLevel}"
+                                           FontAttributes="Bold"
+                                           TextColor="{Binding RiskLevel, Converter={StaticResource RiskLevelToColorConverter}}"
+                                           FontSize="14" />
+                                    <Label Text="{Binding DatePredicted, StringFormat='{0:MMM dd, yyyy HH:mm}'}"
+                                           FontSize="13"
+                                           TextColor="#6B7280"
+                                           HorizontalOptions="EndAndExpand" />
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

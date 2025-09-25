@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:converters="clr-namespace:DFIComplianceApp.Converters"
+    x:Class="DFIComplianceApp.Views.InspectionDetailPage"
+    x:Name="page"
+    Title="Inspection Detail"
+    BackgroundColor="#fafafa">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- ✅ Only keep converters you still need -->
+            <converters:NullToBoolConverter x:Key="NullToBoolConverter"/>
+            <converters:BoolToYesNoConverter x:Key="YesNo"/>
+            <converters:ListHasItemsConverter x:Key="ListHasItemsConverter"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="10">
+
+            <!-- ✅ Loading Indicator -->
+            <ActivityIndicator 
+                IsRunning="{Binding IsLoading}" 
+                IsVisible="{Binding IsLoading}" 
+                VerticalOptions="CenterAndExpand" 
+                HorizontalOptions="CenterAndExpand" 
+                Color="DarkBlue"/>
+
+            <!-- ✅ Header Info -->
+            <Label Text="{Binding CompanyName}"
+                   FontSize="20"
+                   FontAttributes="Bold" />
+
+            <Label Text="{Binding PlannedDate, StringFormat='Planned: {0:dd MMM yyyy}'}" />
+
+            <Label Text="{Binding CompletedDate, StringFormat='Completed: {0:dd MMM yyyy}'}"
+                   IsVisible="{Binding CompletedDate, Converter={StaticResource NullToBoolConverter}}" />
+
+            <Label Text="{Binding InspectorName, StringFormat='Inspector: {0}'}" />
+
+            <!-- ✅ Checklist -->
+            <CollectionView ItemsSource="{Binding Answers}"
+                            Margin="0,10,0,0"
+                            SelectionMode="None">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Padding="10"
+                               CornerRadius="10"
+                               Margin="0,6"
+                               BackgroundColor="White"
+                               BorderColor="#e0e0e0">
+                            <VerticalStackLayout Spacing="6">
+
+                                <!-- Question -->
+                                <Label Text="{Binding QuestionText}"
+                                       FontAttributes="Bold"
+                                       LineBreakMode="WordWrap" />
+
+                                <!-- Compliance -->
+                                <Label Text="{Binding IsCompliant, Converter={StaticResource YesNo}}"
+                                       TextColor="#2e7d32" />
+
+                                <!-- Notes -->
+                                <Label Text="{Binding Notes}"
+                                       FontSize="12"
+                                       TextColor="Gray"
+                                       IsVisible="{Binding Notes, Converter={StaticResource NullToBoolConverter}}" />
+
+                                <!-- ✅ Photos -->
+                                <CollectionView ItemsSource="{Binding PhotosObjects}"
+                                                ItemsLayout="HorizontalList"
+                                                HeightRequest="90"
+                                                SelectionMode="None"
+                                                IsVisible="{Binding PhotosObjects, Converter={StaticResource ListHasItems}}">
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate>
+                                            <!-- Direct binding to DisplaySource -->
+                                            <Image Source="{Binding DisplaySource}"
+                                                   WidthRequest="80"
+                                                   HeightRequest="80"
+                                                   Aspect="AspectFill">
+                                                <Image.GestureRecognizers>
+                                                    <TapGestureRecognizer
+                                                        Command="{Binding Source={x:Reference page}, Path=BindingContext.ImageTappedCommand}"
+                                                        CommandParameter="{Binding .}" />
+                                                </Image.GestureRecognizers>
+                                            </Image>
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                </CollectionView>
+
+                            </VerticalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

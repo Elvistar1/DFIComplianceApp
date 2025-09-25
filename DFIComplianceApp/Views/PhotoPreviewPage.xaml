@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DFIComplianceApp.Views.PhotoPreviewPage"
+             BackgroundColor="Black"
+             NavigationPage.HasNavigationBar="False">
+
+    <Grid>
+        <!-- Fullscreen Image with Pinch-to-Zoom -->
+        <Image x:Name="FullImage"
+               Aspect="AspectFit"
+               VerticalOptions="Center"
+               HorizontalOptions="Center">
+            <Image.GestureRecognizers>
+                <PinchGestureRecognizer PinchUpdated="OnPinchUpdated" />
+            </Image.GestureRecognizers>
+        </Image>
+
+        <!-- Close Button -->
+        <Button Text="✖"
+                BackgroundColor="#AA000000"
+                TextColor="White"
+                WidthRequest="44"
+                HeightRequest="44"
+                FontSize="24"
+                CornerRadius="22"
+                VerticalOptions="Start"
+                HorizontalOptions="End"
+                Margin="20"
+                Clicked="OnCloseClicked" />
+    </Grid>
+</ContentPage>

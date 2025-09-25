@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="DFIComplianceApp.Views.CompanyRenewalHistoryPage"
+    Title="Renewal History"
+    BackgroundColor="#fafafa">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="PDF"
+                     Order="Primary"
+                     Command="{Binding ExportPdfCommand}" />
+        <ToolbarItem Text="Excel"
+                     Order="Primary"
+                     Priority="1"
+                     Command="{Binding ExportExcelCommand}" />
+    </ContentPage.ToolbarItems>
+
+    <Grid RowDefinitions="Auto,*">
+        <!-- Loading indicator -->
+        <ActivityIndicator x:Name="LoadingIndicator"
+                           Color="Green"
+                           IsVisible="False"
+                           IsRunning="False"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"
+                           HeightRequest="40"
+                           WidthRequest="40"/>
+
+        <!-- Normal content -->
+        <VerticalStackLayout Padding="20" Spacing="16" Grid.Row="0" Grid.RowSpan="2"
+                             x:Name="MainContent"
+                             IsVisible="False">
+
+            <Label Text="📅 Company Renewal History"
+                   FontSize="26"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"/>
+
+            <!-- search -->
+            <SearchBar Placeholder="Search by user"
+                       x:Name="SearchBar"
+                       TextChanged="OnSearchTextChanged"/>
+
+            <!-- year filter chips -->
+            <HorizontalStackLayout HorizontalOptions="Center" Spacing="8"
+                                   x:Name="FilterChipStack"/>
+
+            <!-- list -->
+            <CollectionView x:Name="RenewalsCollectionView"
+                            EmptyView="No renewal records found.">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame CornerRadius="12"
+                               Padding="12"
+                               Margin="0,4"
+                               BackgroundColor="White"
+                               BorderColor="#e0e0e0">
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="{Binding RenewalDate, StringFormat='{0:dd MMM yyyy}'}"
+                                       FontAttributes="Bold"
+                                       TextColor="#37474F"/>
+                                <Label Text="{Binding RenewedBy, StringFormat='By {0}'}"
+                                       FontSize="12"
+                                       TextColor="Gray"/>
+                            </VerticalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+        </VerticalStackLayout>
+
+        <!-- Error / Retry UI -->
+        <VerticalStackLayout x:Name="ErrorStateView"
+                             Grid.Row="1"
+                             VerticalOptions="Center"
+                             HorizontalOptions="Center"
+                             Spacing="12"
+                             IsVisible="False">
+
+            <Label x:Name="ErrorMessageLabel"
+                   Text="⚠️ Failed to load from server"
+                   FontSize="18"
+                   TextColor="Red"
+                   HorizontalOptions="Center"/>
+            <Button Text="Tap to Retry"
+                    Clicked="OnRetryClicked"
+                    BackgroundColor="#1976D2"
+                    TextColor="White"
+                    CornerRadius="12"
+                    Padding="12,6"/>
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>

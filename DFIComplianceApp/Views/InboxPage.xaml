@@ -1,0 +1,96 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DFIComplianceApp.Views.InboxPage"
+             Title="📥 Email Inbox">
+
+    <Grid Padding="15" RowSpacing="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <!-- Header -->
+            <RowDefinition Height="Auto" />
+            <!-- Search + Sort -->
+            <RowDefinition Height="Auto" />
+            <!-- Loading Indicator -->
+            <RowDefinition Height="*" />
+            <!-- CollectionView area -->
+            <RowDefinition Height="Auto" />
+            <!-- No Emails Label -->
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Label Text="Received Emails" FontAttributes="Bold" FontSize="20" Grid.Row="0" />
+
+        <!-- Search + Sort -->
+        <HorizontalStackLayout Spacing="10" Grid.Row="1" VerticalOptions="Center">
+            <!-- SearchBar -->
+            <SearchBar x:Name="EmailSearchBar"
+                       Placeholder="Search emails..."
+                       TextChanged="OnSearchBarTextChanged"
+                       HorizontalOptions="FillAndExpand" />
+
+            <!-- Sort Picker -->
+            <Picker x:Name="SortPicker"
+                    Title="Sort by"
+                    SelectedIndexChanged="OnSortPickerChanged"
+                    WidthRequest="120">
+                <Picker.ItemsSource>
+                    <x:Array Type="{x:Type x:String}">
+                        <x:String>Date (Newest)</x:String>
+                        <x:String>Date (Oldest)</x:String>
+                        <x:String>Sender (A-Z)</x:String>
+                        <x:String>Sender (Z-A)</x:String>
+                        <x:String>Subject (A-Z)</x:String>
+                        <x:String>Subject (Z-A)</x:String>
+                    </x:Array>
+                </Picker.ItemsSource>
+            </Picker>
+        </HorizontalStackLayout>
+
+        <!-- Loading Indicator -->
+        <ActivityIndicator x:Name="LoadingIndicator"
+                           IsRunning="False"
+                           IsVisible="False"
+                           Color="Blue"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"
+                           HeightRequest="50"
+                           WidthRequest="50"
+                           Grid.Row="2" />
+
+        <!-- Scrollable RefreshView + CollectionView -->
+        <RefreshView x:Name="InboxRefreshView"
+                     IsRefreshing="False"
+                     Refreshing="OnRefreshRequested"
+                     Grid.Row="3">
+
+            <CollectionView x:Name="EmailsCollectionView"
+                            SelectionMode="Single"
+                            SelectionChanged="OnEmailSelected"
+                            ItemsLayout="VerticalList">
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Padding="10" Margin="5"
+                               BorderColor="Gray"
+                               CornerRadius="8"
+                               HasShadow="True"
+                               BackgroundColor="{AppThemeBinding Light=White, Dark=#222}">
+                            <VerticalStackLayout>
+                                <Label Text="{Binding Subject}" FontAttributes="Bold" FontSize="18" />
+                                <Label Text="{Binding From}" FontAttributes="Italic" FontSize="14" TextColor="Gray" />
+                                <Label Text="{Binding ReceivedDate, StringFormat='Received: {0:dd MMM yyyy hh:mm tt}'}" FontSize="12" />
+                                <Label Text="{Binding BodyPlainText}" LineBreakMode="TailTruncation" MaxLines="3" FontSize="14" />
+                            </VerticalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+
+            </CollectionView>
+        </RefreshView>
+
+        <!-- No Emails Label -->
+        <Label x:Name="NoEmailsLabel" Text="No emails found." IsVisible="False"
+               HorizontalOptions="Center" VerticalOptions="Center" Grid.Row="4" />
+
+    </Grid>
+</ContentPage>

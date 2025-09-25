@@ -1,0 +1,32 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DFIComplianceApp.Views.ScheduleAppointmentFromEmailPage"
+             Title="Schedule Appointment">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+
+            <!-- Company / Request Info -->
+            <Label Text="Company Name" FontAttributes="Bold" />
+            <Entry x:Name="CompanyEntry" Placeholder="Enter company name" />
+
+            <Label Text="Purpose" FontAttributes="Bold" />
+            <Entry x:Name="PurposeEntry" Placeholder="Enter purpose of visit" />
+
+            <!-- Date and Time Pickers -->
+            <Label Text="Appointment Date" FontAttributes="Bold" />
+            <DatePicker x:Name="AppointmentDatePicker" />
+
+            <Label Text="Appointment Time" FontAttributes="Bold" />
+            <TimePicker x:Name="AppointmentTimePicker" />
+
+            <!-- Save Button -->
+            <Button Text="Schedule Appointment"
+                    Clicked="OnScheduleClicked"
+                    BackgroundColor="Green"
+                    TextColor="White"
+                    CornerRadius="10" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

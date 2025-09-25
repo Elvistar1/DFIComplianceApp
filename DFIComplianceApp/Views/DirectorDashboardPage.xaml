@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.Maui;assembly=LiveChartsCore.SkiaSharpView.Maui"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:local="clr-namespace:DFIComplianceApp"
+             x:Class="DFIComplianceApp.Views.DirectorDashboardPage"
+             x:Name="page"
+             Title="Director Dashboard"
+             BackgroundColor="{AppThemeBinding Light=White, Dark=#1e1e1e}">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Color x:Key="CardLightBackground">#ffffff</Color>
+            <Color x:Key="CardDarkBackground">#2b2b2b</Color>
+
+            <local:NonZeroConverter x:Key="NonZero" />
+
+            <Style x:Key="PrimaryButton" TargetType="Button">
+                <Setter Property="CornerRadius" Value="12"/>
+                <Setter Property="Padding" Value="12,8"/>
+                <Setter Property="TextColor" Value="{AppThemeBinding Light=White, Dark=White}"/>
+                <Setter Property="FontSize" Value="16"/>
+                <Setter Property="HorizontalOptions" Value="FillAndExpand"/>
+            </Style>
+
+            <Style x:Key="SecondaryButton" TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
+                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#388E3C, Dark=#66BB6A}"/>
+            </Style>
+
+            <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
+                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#F44336, Dark=#EF9A9A}"/>
+            </Style>
+
+            <Style x:Key="DashboardCard" TargetType="Frame">
+                <Setter Property="CornerRadius" Value="12"/>
+                <Setter Property="Padding" Value="15"/>
+                <Setter Property="HasShadow" Value="True"/>
+                <Setter Property="Margin" Value="0,5"/>
+                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource CardLightBackground}, Dark={StaticResource CardDarkBackground}}"/>
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ContentPage.Content>
+        <ScrollView>
+            <VerticalStackLayout Padding="20" Spacing="24">
+                <Label Text="Welcome, Director!" FontSize="26" FontAttributes="Bold"
+                   TextColor="{AppThemeBinding Light=#333, Dark=White}" />
+
+                <HorizontalStackLayout Spacing="12" Padding="0,10">
+                    <!-- Email Queue -->
+                    <HorizontalStackLayout Spacing="6">
+                        <Label Text="Email Queue:" FontAttributes="Bold"
+           TextColor="{AppThemeBinding Light=Black, Dark=White}" />
+                        <Frame x:Name="InboxBadgeFrame" Padding="6,0" BackgroundColor="Blue" IsVisible="False">
+                            <Label x:Name="InboxBadgeLabel" FontAttributes="Bold" TextColor="White" />
+                        </Frame>
+                        <HorizontalStackLayout.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnInboxBadgeTapped" />
+                        </HorizontalStackLayout.GestureRecognizers>
+                    </HorizontalStackLayout>
+
+                    <!-- Inbox Email Badge (different function) -->
+                    <HorizontalStackLayout Spacing="6">
+                        <Label Text="Inbox Emails:" FontAttributes="Bold"
+           TextColor="{AppThemeBinding Light=Black, Dark=White}" />
+                        <Frame x:Name="InboxBadgeEmailFrame" Padding="6,0" BackgroundColor="DarkBlue" IsVisible="False">
+                            <Label x:Name="InboxBadgeEmailLabel" FontAttributes="Bold" TextColor="White" />
+                        </Frame>
+                        <HorizontalStackLayout.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnInboxEmailBadgeTapped" />
+                        </HorizontalStackLayout.GestureRecognizers>
+                    </HorizontalStackLayout>
+
+                    <!-- Outbox -->
+                    <HorizontalStackLayout Spacing="6">
+                        <Label Text="Outbox:" FontAttributes="Bold"
+           TextColor="{AppThemeBinding Light=Black, Dark=White}" />
+                        <Frame x:Name="OutboxBadgeFrame" Padding="6,0" BackgroundColor="Red" IsVisible="False">
+                            <Label x:Name="OutboxBadgeLabel" FontAttributes="Bold" TextColor="White" />
+                        </Frame>
+                        <HorizontalStackLayout.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnOutboxBadgeTapped" />
+                        </HorizontalStackLayout.GestureRecognizers>
+                    </HorizontalStackLayout>
+                </HorizontalStackLayout>
+
+                <!-- Info Grid -->
+                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="12">
+                    <!-- Total Companies -->
+                    <Frame Style="{StaticResource DashboardCard}">
+                        <VerticalStackLayout>
+                            <Label Text="Total Companies" FontSize="16"
+                               TextColor="{AppThemeBinding Light=#0277BD, Dark=#81D4FA}"/>
+                            <Label x:Name="CompaniesCountLabel" FontSize="28" FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=#01579B, Dark=#29B6F6}"/>
+                            <Label x:Name="CompaniesEmptyLabel" Text="No companies registered yet." FontSize="14"
+                               TextColor="{AppThemeBinding Light=Gray, Dark=LightGray}" IsVisible="False"
+                               HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Scheduled Inspections -->
+                    <Frame Style="{StaticResource DashboardCard}" Grid.Column="1">
+                        <VerticalStackLayout>
+                            <Label Text="Scheduled Inspections" FontSize="16"
+                               TextColor="{AppThemeBinding Light=#AD1457, Dark=#F48FB1}"/>
+                            <Label x:Name="InspectionsCountLabel" FontSize="28" FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=#880E4F, Dark=#F06292}"/>
+                            <Label x:Name="InspectionsEmptyLabel" Text="No inspections scheduled." FontSize="14"
+                               TextColor="{AppThemeBinding Light=Gray, Dark=LightGray}" IsVisible="False"
+                               HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Completed Inspections -->
+                    <Frame Style="{StaticResource DashboardCard}" Grid.Row="1">
+                        <VerticalStackLayout>
+                            <Label Text="Completed Inspections" FontSize="16"
+                               TextColor="{AppThemeBinding Light=#388E3C, Dark=#A5D6A7}"/>
+                            <Label x:Name="CompletedCountLabel" FontSize="28" FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=#1B5E20, Dark=#66BB6A}"/>
+                            <Label x:Name="CompletedEmptyLabel" Text="No inspections completed." FontSize="14"
+                               TextColor="{AppThemeBinding Light=Gray, Dark=LightGray}" IsVisible="False"
+                               HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Active Users -->
+                    <Frame Style="{StaticResource DashboardCard}" Grid.Row="1" Grid.Column="1">
+                        <VerticalStackLayout>
+                            <Label Text="Active Users" FontSize="16"
+                               TextColor="{AppThemeBinding Light=#F57C00, Dark=#FFB74D}"/>
+                            <Label x:Name="UsersCountLabel" FontSize="28" FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=#E65100, Dark=#FFA726}"/>
+                            <Label x:Name="UsersEmptyLabel" Text="No active users." FontSize="14"
+                               TextColor="{AppThemeBinding Light=Gray, Dark=LightGray}" IsVisible="False"
+                               HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Frame>
+                </Grid>
+
+                <!-- Chart Card -->
+                <Frame CornerRadius="16"
+                       HasShadow="True"
+                       Padding="15"
+                       BackgroundColor="{AppThemeBinding Light=White, Dark=#2C2C2C}"
+                       Margin="0,10,0,10">
+                    <Grid RowDefinitions="Auto,*">
+                        <!-- Header Row -->
+                        <HorizontalStackLayout Spacing="8" VerticalOptions="Center" Grid.Row="0">
+                            <Image Source="chart_icon.png" HeightRequest="24" WidthRequest="24"
+                                   VerticalOptions="Center" />
+                            <Label Text="Inspections Overview"
+                                   FontSize="20"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light=Black, Dark=White}"
+                                   VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+                        <!-- Chart -->
+                        <lvc:CartesianChart x:Name="DashboardChart"
+                            Grid.Row="1"
+                            HorizontalOptions="FillAndExpand"
+                            VerticalOptions="FillAndExpand"
+                            MinimumHeightRequest="200"
+                            HeightRequest="280"
+                            Series="{Binding ChartSeries}"
+                            XAxes="{Binding ChartXAxis}"
+                            YAxes="{Binding ChartYAxis}"
+                            BackgroundColor="Transparent" />
+                    </Grid>
+                </Frame>
+
+                <!-- Filter Pickers -->
+                <Button 
+                    Text="Reset to Current Year" 
+                    Clicked="OnResetYearClicked"
+                    BackgroundColor="Gray"
+                    HorizontalOptions="End" />
+                <Picker x:Name="CompanyTypePicker"
+                        Title="Company Type"
+                        ItemsSource="{Binding CompanyTypes}"
+                        SelectedItem="{Binding SelectedCompanyType}"
+                        SelectedIndexChanged="OnCompanyTypeChanged" />
+                <Picker x:Name="CompanyPicker"
+                        Title="Company"
+                        ItemsSource="{Binding FilteredCompanies}"
+                        ItemDisplayBinding="{Binding Name}"
+                        SelectedItem="{Binding SelectedCompany}"
+                        SelectedIndexChanged="OnCompanyChanged" />
+                <Picker x:Name="LocationPicker"
+                        Title="Location"
+                        ItemsSource="{Binding AvailableLocations}"
+                        SelectedIndexChanged="OnLocationChanged"
+                        SelectedItem="{Binding SelectedLocation}" />
+                <Picker x:Name="YearPicker"
+                        Title="Year"
+                        ItemsSource="{Binding AvailableYears}"
+                        SelectedItem="{Binding SelectedYear}" />
+
+                <!-- 📊 Risk Levels Pie Chart -->
+                <VerticalStackLayout Padding="10" Spacing="24">
+                    <Label Text="Risk Analytics" FontSize="18" FontAttributes="Bold"
+                           HorizontalOptions="Center"
+                           TextColor="{AppThemeBinding Light=Black, Dark=White}" />
+
+                    <!-- Pie Chart Section -->
+                    <Frame Padding="10" HasShadow="True" BackgroundColor="{AppThemeBinding Light=White, Dark=#2C2C2C}">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Current Risk Distribution" FontAttributes="Bold"
+                                   FontSize="14"
+                                   TextColor="{AppThemeBinding Light=Black, Dark=White}" />
+                            <lvc:PieChart Series="{Binding RiskChartSeries}"
+                                          HorizontalOptions="FillAndExpand"
+                                          VerticalOptions="FillAndExpand"
+                                          HeightRequest="260"
+                                          LegendPosition="Bottom"
+                                          BackgroundColor="{AppThemeBinding Light=White, Dark=#2C2C2C}" />
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Risk Trend Chart Section -->
+                    <Frame Padding="10" HasShadow="True" BackgroundColor="{AppThemeBinding Light=White, Dark=#2C2C2C}">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Risk Trend (12 Months)" FontAttributes="Bold"
+                                   FontSize="14"
+                                   TextColor="{AppThemeBinding Light=Black, Dark=White}" />
+                            <lvc:CartesianChart x:Name="RiskTrendChart"
+                            HorizontalOptions="FillAndExpand"
+                            VerticalOptions="FillAndExpand"
+                            HeightRequest="320"
+                            LegendPosition="Right"
+                            TooltipPosition="Top"
+                            BackgroundColor="{AppThemeBinding Light=White, Dark=#2C2C2C}" />
+                        </VerticalStackLayout>
+                    </Frame>
+                </VerticalStackLayout>
+
+                <!-- User Management -->
+                <Frame Padding="10" Style="{StaticResource DashboardCard}">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="👥 User Management" FontSize="18" FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=Black, Dark=White}" />
+                        <Button Text="➕ Create New Users" Clicked="OnCreateUserClicked"
+                                Style="{StaticResource PrimaryButton}" BackgroundColor="#64B5F6"/>
+                        <Button Text="🛠️ Manage Users" Clicked="OnManageUsersClicked"
+                                Style="{StaticResource PrimaryButton}" BackgroundColor="#1976D2"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Company Management -->
+                <Frame Padding="10" Style="{StaticResource DashboardCard}">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="🏭 Company Management" FontSize="18" FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=Black, Dark=White}" />
+                        <Button Text="🏢 Register Company" Clicked="OnRegisterCompanyClicked"
+                                Style="{StaticResource SecondaryButton}" BackgroundColor="#81C784"/>
+                        <Button Text="📁 Renewal | View Registered Companies" Clicked="OnViewCompaniesClicked"
+                                Style="{StaticResource SecondaryButton}"/>
+                        <Button Text="📆 Upcoming Renewals" Clicked="OnUpcomingRenewalsClicked"
+                                Style="{StaticResource PrimaryButton}" BackgroundColor="#FBC02D"
+                                TextColor="{AppThemeBinding Light=Black, Dark=Black}"/>
+                        <Button 
+                            Text="📊 Company Risk Prediction"
+                            Clicked="OnNavigateToCompanyRiskPrediction"
+                            Style="{StaticResource PrimaryButton}"
+                            BackgroundColor="#9C27B0"
+                            TextColor="White"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Inspections & Logs -->
+                <Frame Padding="10" Style="{StaticResource DashboardCard}">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="📋 Inspections &amp; Logs" FontSize="18" FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=Black, Dark=White}" />
+                        <Button Text="📝 Conduct Inspection" Clicked="OnConductInspectionClicked"
+                                Style="{StaticResource PrimaryButton}" BackgroundColor="#009688" />
+                        <Button Text="📆 Schedule Inspections" Clicked="OnScheduleInspectionClicked"
+                                Style="{StaticResource PrimaryButton}" BackgroundColor="#FFD54F"
+                                TextColor="{AppThemeBinding Light=#333, Dark=Black}" />
+                        <Button Text="📋 Inspection History"
+                                Clicked="OnInspectionHistoryClicked"
+                                BackgroundColor="#1976d2"
+                                TextColor="White" />
+                        <Button Text="📅 New Appointment"
+                                Clicked="OnNewAppointmentClicked"
+                                BackgroundColor="#1976d2"
+                                TextColor="White"
+                                CornerRadius="10" />
+                        <Button Text="🔍 Monitor Activities" Clicked="OnActivityLogClicked"
+                                Style="{StaticResource PrimaryButton}" BackgroundColor="#FFB300"
+                                TextColor="{AppThemeBinding Light=#333, Dark=Black}"/>
+                        <Button Text="🤖 AI Report Oversight" Clicked="OnAIReportOversightClicked"
+                                Style="{StaticResource PrimaryButton}" BackgroundColor="#CE93D8"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Settings -->
+                <Frame Padding="10" Style="{StaticResource DashboardCard}">
+                    <VerticalStackLayout Spacing="10">
+                        <Button Text="🚪 Log Out" Clicked="OnLogoutClicked"
+                                Style="{StaticResource DangerButton}"/>
+                    </VerticalStackLayout>
+                </Frame>
+            </VerticalStackLayout>
+        </ScrollView>
+    </ContentPage.Content>
+</ContentPage>
